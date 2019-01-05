@@ -2,7 +2,7 @@
 #include <iterator>
 #include <string>
 #include <vector>
-#include "include/spiritless_po/PluralParser.h"
+#include "spiritless_po/PluralParser.h"
 
 using namespace std;
 using namespace spiritless_po;
@@ -86,7 +86,7 @@ int main()
 			} else {
 				auto pos = std::distance(s.cbegin(), e.Where());
 				for (size_t ii=0; ii<s.length(); ii++) {
-					if (pos == ii) {
+					if (static_cast<size_t>(pos) == ii) {
 						cerr << ']' << s[ii] << '[';
 					} else {
 						cerr << s[ii];
@@ -107,7 +107,7 @@ int main()
 			} else {
 				auto pos = std::distance(np.cbegin(), e.Where());
 				for (size_t ii=0; ii<np.length(); ii++) {
-					if (pos == ii) {
+					if (static_cast<size_t>(pos) == ii) {
 						cerr << ']' << np[ii] << '[';
 					} else {
 						cerr << np[ii];

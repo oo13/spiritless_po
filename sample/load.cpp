@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include "include/spiritless_po/spiritless_po.h"
+#include "spiritless_po/spiritless_po.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	}
 	
 	spiritless_po::Catalog catalog;
-	for (size_t ii=0; ii<argc-1; ii++) {
+	for (size_t ii=0; ii<static_cast<size_t>(argc)-1; ii++) {
 		ifstream f(argv[ii+1]);
 		catalog.ClearError();
 		if (!catalog.Add(f)) {
