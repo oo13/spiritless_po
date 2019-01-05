@@ -77,7 +77,7 @@ namespace spiritless_po {
 		// Skip spaces (Utility function)
 		inline void SkipSpaces(InP &it, const InP &end)
 		{
-			while(it != end && std::isspace(*it))
+			while(it != end && std::isspace(static_cast<unsigned char>(*it)))
 				++it;
 		}
 		
@@ -87,7 +87,7 @@ namespace spiritless_po {
 		inline NumT GetNumber(InP &it, const InP &end)
 		{
 			std::string s;
-			while(it != end && std::isdigit(*it))
+			while(it != end && std::isdigit(static_cast<unsigned char>(*it)))
 				s += *it++;
 			if(!s.empty())
 				return std::stoi(s);

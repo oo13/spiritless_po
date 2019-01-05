@@ -121,7 +121,7 @@ namespace spiritless_po {
 			for(;;)
 			{
 				const char c = it.Get();
-				if(c != '\n' && std::isspace(c))
+				if(c != '\n' && std::isspace(static_cast<unsigned char>(c)))
 					it.Next();
 				else
 					break;
@@ -144,7 +144,7 @@ namespace spiritless_po {
 			for(;;)
 			{
 				const char c = it.Get();
-				if(std::isalpha(c) || c == '_')
+				if(std::isalpha(static_cast<unsigned char>(c)) || c == '_')
 				{
 					s += c;
 					it.Next();
@@ -163,7 +163,7 @@ namespace spiritless_po {
 			for(;;)
 			{
 				const char c = it.Get();
-				if(std::isdigit(c))
+				if(std::isdigit(static_cast<unsigned char>(c)))
 				{
 					s += c;
 					it.Next();
@@ -182,7 +182,7 @@ namespace spiritless_po {
 			for(;;)
 			{
 				const char c = it.Get();
-				if(std::isdigit(c) && c != '8' && c != '9')
+				if(std::isdigit(static_cast<unsigned char>(c)) && c != '8' && c != '9')
 				{
 					s += c;
 					it.Next();
@@ -201,9 +201,7 @@ namespace spiritless_po {
 			for(;;)
 			{
 				const char c = it.Get();
-				if(std::isdigit(c)
-					|| c == 'a' || c == 'b' || c == 'c' || c == 'd' || c == 'e' || c == 'f'
-					|| c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F')
+				if(std::isxdigit(static_cast<unsigned char>(c)))
 				{
 					s += c;
 					it.Next();
