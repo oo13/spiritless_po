@@ -11,7 +11,6 @@ You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 #define SRIRITLESS_PO_PO_PARSER_H_
 
 #include "Common.h"
-#include "ParseError.h"
 
 #include <cassert>
 #include <cstddef>
