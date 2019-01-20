@@ -58,6 +58,8 @@ namespace spiritless_po {
 			while(it != end)
 			{
 				const PoParser::CatalogEntryT value = ParseOneEntry(pos, typeOfLine);
+				if(typeOfLine == PoParser::LineT::END)
+					break;
 				if(value.error.empty())
 				{
 					if(metadata.empty() && value.msgid.empty())
