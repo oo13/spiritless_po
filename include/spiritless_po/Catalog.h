@@ -29,7 +29,7 @@ namespace spiritless_po {
 	// Catalog class
 	class Catalog {
 	public:
-		Catalog() noexcept
+		Catalog()
 			: metadata(), index(), stringTable(), pluralFunction([](int n){ return 0; }), maxPlurals(0), errors()
 		{}
 		explicit Catalog(std::istream &is)
@@ -37,10 +37,10 @@ namespace spiritless_po {
 		{
 			Add(is);
 		}
-		Catalog(const Catalog &a) noexcept = default;
-		Catalog(Catalog &&a) noexcept = default;
-		Catalog &operator=(const Catalog &a) noexcept = default;
-		Catalog &operator=(Catalog &&a) noexcept = default;
+		Catalog(const Catalog &a) = default;
+		Catalog(Catalog &&a) = default;
+		Catalog &operator=(const Catalog &a) = default;
+		Catalog &operator=(Catalog &&a) = default;
 		
 		void Clear()
 		{
