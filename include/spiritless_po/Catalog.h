@@ -66,9 +66,9 @@ namespace spiritless_po {
 					{
 						metadata = MetadataParser::Parse(value.msgstr[0]);
 						const auto plural = metadata.find("Plural-Forms");
-						const auto pluralText = plural->second;
 						if(plural != metadata.end())
 						{
+							const auto pluralText = plural->second;
 							try
 							{
 								const auto pluralData = PluralParser::Parse(pluralText);
