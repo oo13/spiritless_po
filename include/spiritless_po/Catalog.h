@@ -60,7 +60,9 @@ namespace spiritless_po {
 				const PoParser::CatalogEntryT value = ParseOneEntry(pos, typeOfLine);
 				if(typeOfLine == PoParser::LineT::END)
 					break;
-				if(value.error.empty())
+				if(!value.error.empty())
+					errors.push_back(std::move(value.error));
+				else if(!value.msgstr[0].empty())
 				{
 					if(metadata.empty() && value.msgid.empty())
 					{
@@ -83,7 +85,7 @@ namespace spiritless_po {
 							}
 						}
 					}
-					if(!value.msgstr[0].empty())
+					else
 					{
 						IndexDataT idx;
 						idx.stringTableIndex = stringTable.size();
@@ -92,8 +94,6 @@ namespace spiritless_po {
 						index.emplace(value.msgid, idx);
 					}
 				}
-				else
-					errors.push_back(std::move(value.error));
 			}
 			return errors.empty();
 		}

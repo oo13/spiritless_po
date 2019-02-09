@@ -21,7 +21,8 @@ You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 namespace spiritless_po {
 	namespace PoParser {
 		// Type of Result data.
-		// msgid and msgstr is unknown data when error is not empty.
+		// msgid and msgstr is undefined when error is not empty.
+		// msgstr[0] is an empty string if the entry is fuzzy.
 		struct CatalogEntryT {
 			std::string msgid;
 			std::vector<std::string> msgstr;
@@ -49,7 +50,7 @@ namespace spiritless_po {
 			NONE = 0,
 			FUZZY = 1<<0
 		};
-		inline FlagT operator|=(FlagT a, FlagT b)
+		inline FlagT operator|=(FlagT &a, FlagT b)
 		{
 			return a = static_cast<FlagT>(a | b);
 		}
@@ -496,6 +497,8 @@ namespace spiritless_po {
 						out.msgstr.push_back(ParseMsgdata(it));
 						stat = DecisionTypeOfLine(it);
 					}
+				if(flag & FUZZY)
+					out.msgstr[0].clear();
 			}
 			catch(PoParseError<INP> &e)
 			{
