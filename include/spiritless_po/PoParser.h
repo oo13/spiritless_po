@@ -525,4 +525,4 @@ namespace spiritless_po {
 	} // namespace PoParser
 } // namespace spiritless_po
 
-#endif // SRIRITLESS_PO_PLURAL_PARSER_H_
+#endif // SRIRITLESS_PO_PO_PARSER_H_

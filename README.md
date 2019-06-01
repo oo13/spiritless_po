@@ -4,7 +4,7 @@
 
 The only feature of this library is that it does not depend on Boost library.
 
-I don't intend to compatible with spirit-po.
+I don't intend to be compatible with spirit-po.
 
 Example:
 ```c++
