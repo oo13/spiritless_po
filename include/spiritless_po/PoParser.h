@@ -56,46 +56,26 @@ namespace spiritless_po {
 			NONE = 0,
 			FUZZY = 1<<0
 		};
+		
 		inline FlagT operator|=(FlagT &a, FlagT b)
 		{
 			return a = static_cast<FlagT>(a | b);
 		}
 		
+		
+		
 		// Reading position type.
 		template<class INP>
 		class PositionT {
 		public:
-			PositionT(const INP &it, const INP &end, std::size_t line = 1, std::size_t column = 1)
-				: curIt(it), endIt(end), lineNumber(line), columnNumber(column)
-			{}
+			PositionT(const INP &it, const INP &end, std::size_t line = 1, std::size_t column = 1);
 			
-			bool IsEnd() const
-			{ return curIt == endIt; }
-			
-			bool IsNotEnd() const
-			{ return curIt != endIt; }
-			
-			char Get() const
-			{ return IsEnd() ? '\0' : *curIt; }
-			
-			void Next()
-			{
-				if(IsNotEnd())
-				{
-					if(Get() == '\n')
-					{
-						++lineNumber;
-						columnNumber = 0;
-					}
-					++curIt;
-					++columnNumber;
-				}
-			}
-			
-			std::size_t GetLine() const
-			{ return lineNumber; }
-			std::size_t GetColumn() const
-			{ return columnNumber; }
+			bool IsEnd() const;
+			bool IsNotEnd() const;
+			char Get() const;
+			void Next();
+			std::size_t GetLine() const;
+			std::size_t GetColumn() const;
 			
 		private:
 			INP curIt;
@@ -104,23 +84,95 @@ namespace spiritless_po {
 			std::size_t columnNumber;
 		};
 		
+		
 		// Parse Error in PO file.
 		template<class INP>
 		class PoParseError : public std::runtime_error {
 		public:
-			explicit PoParseError(const std::string &whatArg, const PositionT<INP> &it)
-				: std::runtime_error(whatArg), loc(it)
-			{}
-			explicit PoParseError(const char *whatArg, const PositionT<INP> &it)
-				: std::runtime_error(whatArg), loc(it)
-			{}
+			explicit PoParseError(const std::string &whatArg, const PositionT<INP> &it);
+			explicit PoParseError(const char *whatArg, const PositionT<INP> &it);
 			
 			// Get the error location.
-			const PositionT<INP> &GetLocation() const noexcept
-			{ return loc; }
+			const PositionT<INP> &GetLocation() const noexcept;
+			
 		private:
 			PositionT<INP> loc;
 		};
+		
+		
+		
+		template<class INP>
+		PositionT<INP>::PositionT(const INP &it, const INP &end, std::size_t line, std::size_t column)
+			: curIt(it), endIt(end), lineNumber(line), columnNumber(column)
+		{
+		}
+		
+		template<class INP>
+		bool PositionT<INP>::IsEnd() const
+		{
+			return curIt == endIt;
+		}
+		
+		template<class INP>
+		bool PositionT<INP>::IsNotEnd() const
+		{
+			return curIt != endIt;
+		}
+		
+		template<class INP>
+		char PositionT<INP>::Get() const
+		{
+			return IsEnd() ? '\0' : *curIt;
+		}
+		
+		template<class INP>
+		void PositionT<INP>::Next()
+		{
+			if(IsNotEnd())
+			{
+				if(Get() == '\n')
+				{
+					++lineNumber;
+					columnNumber = 0;
+				}
+				++curIt;
+				++columnNumber;
+			}
+		}
+		
+		template<class INP>
+		std::size_t PositionT<INP>::GetLine() const
+		{
+			return lineNumber;
+		}
+		
+		template<class INP>
+		std::size_t PositionT<INP>::GetColumn() const
+		{
+			return columnNumber;
+		}
+		
+		
+		template<class INP>
+		PoParseError<INP>::PoParseError(const std::string &whatArg, const PositionT<INP> &it)
+			: std::runtime_error(whatArg), loc(it)
+		{
+		}
+		
+		template<class INP>
+		PoParseError<INP>::PoParseError(const char *whatArg, const PositionT<INP> &it)
+			: std::runtime_error(whatArg), loc(it)
+		{
+		}
+		
+		// Get the error location.
+		template<class INP>
+		const PositionT<INP> &PoParseError<INP>::GetLocation() const noexcept
+		{
+			return loc;
+		}
+		
+		
 		
 		// Skip spaces except NL. (Utility function)
 		template<class INP>

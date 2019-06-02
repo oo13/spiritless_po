@@ -45,17 +45,31 @@ namespace spiritless_po {
 		// The type of exception when raised by a parse error.
 		class ExpressionError : public std::runtime_error {
 		public:
-			explicit ExpressionError(const std::string &whatArg, const InP &it)
-				: std::runtime_error(whatArg), pos(it)
-			{}
-			explicit ExpressionError(const char *whatArg, const InP &it)
-				: std::runtime_error(whatArg), pos(it)
-			{}
-			const InP &Where() const noexcept
-			{ return pos; }
+			explicit ExpressionError(const std::string &whatArg, const InP &it);
+			explicit ExpressionError(const char *whatArg, const InP &it);
+			
+			const InP &Where() const noexcept;
+			
 		private:
 			InP pos;
 		};
+		
+		
+		
+		inline ExpressionError::ExpressionError(const std::string &whatArg, const InP &it)
+			: std::runtime_error(whatArg), pos(it)
+		{
+		}
+		
+		ExpressionError::ExpressionError(const char *whatArg, const InP &it)
+			: std::runtime_error(whatArg), pos(it)
+		{
+		}
+		
+		const InP &ExpressionError::Where() const noexcept
+		{
+			return pos;
+		}
 		
 		
 		
