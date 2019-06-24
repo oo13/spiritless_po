@@ -24,12 +24,11 @@ GNU General Public License for more details.
 #include <string>
 
 namespace spiritless_po {
+	// This is a parser of the plural expression.
+	// This parser is an LL(1) parser.
 	namespace PluralParser {
 		// Integer type for plural forms.
 		typedef unsigned long int NumT;
-		
-		// This is a parser of the plural expression.
-		// This parser is an LL(1) parser.
 		
 		// The type of a plural form function.
 		typedef std::function<NumT(NumT)> FunctionType;
