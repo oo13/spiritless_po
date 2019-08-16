@@ -47,12 +47,14 @@ namespace spiritless_po {
 		
 		// Add another text range contents.
 		// This function will not change any existed values including metadata.
+		// An entry will not be added if its msgstr[0] is empty.
 		// It returns true if no error is existed.
 		template<class INP>
 		bool Add(INP &it, const INP &end);
 		
 		// Add another istream contents.
 		// This function will not change any existed values including metadata.
+		// An entry will not be added if its msgstr[0] is empty.
 		// It returns true when no error is existed.
 		bool Add(std::istream &is);
 		
@@ -120,22 +122,26 @@ namespace spiritless_po {
 	}
 	
 	template<class INP>
-	bool Catalog::Add(INP &it, const INP &end)
+	bool Catalog::Add(INP &begin, const INP &end)
 	{
-		PoParser::PositionT<INP> pos(it, end);
-		PoParser::LineT typeOfLine = PoParser::LineT::START;
-		while(it != end)
+		std::vector<CatalogEntryT> newEntries(PoParser::GetEntries(begin, end));
+		for (const auto &it : newEntries)
 		{
-			const PoParser::CatalogEntryT value = ParseOneEntry(pos, typeOfLine);
-			if(typeOfLine == PoParser::LineT::END)
-				break;
-			if(!value.error.empty())
-				errors.push_back(std::move(value.error));
-			else if(!value.msgstr[0].empty())
+			if(!it.error.empty())
+				errors.push_back(std::move(it.error));
+			else if(!it.msgstr[0].empty())
 			{
-				if(metadata.empty() && value.msgid.empty())
+				if(!it.msgid.empty())
 				{
-					metadata = MetadataParser::Parse(value.msgstr[0]);
+					IndexDataT idx;
+					idx.stringTableIndex = stringTable.size();
+					idx.totalPlurals = it.msgstr.size();
+					stringTable.insert(stringTable.end(), it.msgstr.begin(), it.msgstr.end());
+					index.emplace(it.msgid, idx);
+				}
+				else if(metadata.empty())
+				{
+					metadata = MetadataParser::Parse(it.msgstr[0]);
 					const auto plural = metadata.find("Plural-Forms");
 					if(plural != metadata.end())
 					{
@@ -155,14 +161,6 @@ namespace spiritless_po {
 						}
 					}
 				}
-				else
-				{
-					IndexDataT idx;
-					idx.stringTableIndex = stringTable.size();
-					idx.totalPlurals = value.msgstr.size();
-					stringTable.insert(stringTable.end(), value.msgstr.begin(), value.msgstr.end());
-					index.emplace(value.msgid, idx);
-				}
 			}
 		}
 		return errors.empty();
@@ -170,9 +168,9 @@ namespace spiritless_po {
 	
 	inline bool Catalog::Add(std::istream &is)
 	{
-		std::istreambuf_iterator<char> it(is);
+		std::istreambuf_iterator<char> begin(is);
 		std::istreambuf_iterator<char> end;
-		return Add(it, end);
+		return Add(begin, end);
 	}
 	
 	inline void Catalog::Merge(const Catalog &a)

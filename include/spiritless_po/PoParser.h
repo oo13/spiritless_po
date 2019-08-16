@@ -26,15 +26,6 @@ GNU General Public License for more details.
 
 namespace spiritless_po {
 	namespace PoParser {
-		// Type of Result data.
-		// msgid and msgstr is undefined when error is not empty.
-		// msgstr[0] is an empty string if the entry is fuzzy.
-		struct CatalogEntryT {
-			std::string msgid;
-			std::vector<std::string> msgstr;
-			std::string error;
-		};
-		
 		// Type of a line.
 		enum class LineT {
 			START,
@@ -573,6 +564,23 @@ namespace spiritless_po {
 			}
 			previousLine = stat;
 			return out;
+		}
+		
+		// Parse all catalog entries.
+		template<class INP>
+		std::vector<CatalogEntryT> GetEntries(INP &begin, const INP &end)
+		{
+			std::vector<CatalogEntryT> entries;
+			PositionT<INP> pos(begin, end);
+			LineT typeOfLine = LineT::START;
+			while(pos.IsNotEnd())
+			{
+				const CatalogEntryT value = ParseOneEntry(pos, typeOfLine);
+				if(typeOfLine == LineT::END)
+					break;
+				entries.push_back(std::move(value));
+			}
+			return entries;
 		}
 	} // namespace PoParser
 } // namespace spiritless_po
