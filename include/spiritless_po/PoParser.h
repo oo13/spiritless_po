@@ -195,7 +195,8 @@ namespace spiritless_po {
 			for(;;)
 			{
 				const char c = it.Get();
-				if(std::isalpha(static_cast<unsigned char>(c)) || c == '_')
+				// '-' is a valid character of flags.
+				if(std::isalpha(static_cast<unsigned char>(c)) || c == '_' || c == '-')
 				{
 					s += c;
 					it.Next();
