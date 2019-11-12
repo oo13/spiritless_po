@@ -288,12 +288,7 @@ namespace spiritless_po {
 			else if (c == '#')
 			{
 				it.Next();
-				if(it.Get() == '~')
-				{
-					SkipUntilNL(it);
-					return LineT::EMPTY;
-				}
-				else if(it.Get() == ',')
+				if(it.Get() == ',')
 				{
 					it.Next();
 					return LineT::FLAG_COMMENT;
@@ -488,23 +483,23 @@ namespace spiritless_po {
 				FlagT flag = NONE;
 				if(stat == LineT::START)
 					stat = DecisionTypeOfLine(it);
-				while(stat == LineT::EMPTY)
+				while(stat == LineT::EMPTY || stat == LineT::COMMENT || stat == LineT::FLAG_COMMENT)
 				{
-					ParseEmptyLine(it);
+					if (stat == LineT::EMPTY)
+					{
+						ParseEmptyLine(it);
+						flag = NONE;
+					}
+					else if (stat == LineT::COMMENT)
+						ParseEmptyLine(it);
+					else
+						flag |= ParseFlagComment(it);
 					stat = DecisionTypeOfLine(it);
 				}
 				if(it.IsEnd())
 				{
 					previousLine = LineT::END;
 					return out;
-				}
-				while(stat == LineT::COMMENT || stat == LineT::FLAG_COMMENT)
-				{
-					if (stat == LineT::COMMENT)
-						ParseEmptyLine(it);
-					else
-						flag |= ParseFlagComment(it);
-					stat = DecisionTypeOfLine(it);
 				}
 				if(stat == LineT::MSGCTXT)
 				{
