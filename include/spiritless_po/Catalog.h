@@ -67,7 +67,7 @@ namespace spiritless_po {
 		void ClearError();
 		
 		// Get error information.
-		const std::vector<std::string> &GetError();
+		const std::vector<std::string> &GetError() const;
 		
 		// Get the translated text.
 		const std::string gettext(const std::string &msgid) const;
@@ -197,7 +197,7 @@ namespace spiritless_po {
 		errors.clear();
 	}
 	
-	inline const std::vector<std::string> &Catalog::GetError()
+	inline const std::vector<std::string> &Catalog::GetError() const
 	{
 		return errors;
 	}
