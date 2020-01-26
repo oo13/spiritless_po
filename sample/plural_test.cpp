@@ -1,6 +1,6 @@
 /* sample/plural_test.cpp
 
-Copyright © 2019 OOTA, Masato
+Copyright (c) 2019 OOTA, Masato
 
 spiritless_po is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
