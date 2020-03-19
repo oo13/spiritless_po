@@ -276,7 +276,7 @@ namespace spiritless_po {
 		return index;
 	}
 	
-	const std::vector<std::string> &Catalog::GetStringTable() const
+	inline const std::vector<std::string> &Catalog::GetStringTable() const
 	{
 		return stringTable;
 	}
