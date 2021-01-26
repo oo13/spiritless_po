@@ -390,7 +390,7 @@ namespace spiritless_po {
 				else if(c == '"')
 				{
 					SkipSpacesExceptNL(it);
-					if(it.Get() != '\n')
+					if(it.Get() != '\n' && !it.IsEnd())
 						throw PoParseError<INP>("Unexpected character is found.", it);
 					it.Next();
 					return s;
