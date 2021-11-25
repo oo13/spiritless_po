@@ -16,29 +16,29 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	if (argc <= 1) {
-		cerr << "This program needs one filename." << endl;
-		return 1;
-	}
-	
-	spiritless_po::Catalog catalog;
-	for (size_t ii=0; ii<static_cast<size_t>(argc)-1; ii++) {
-		ifstream f(argv[ii+1]);
-		catalog.ClearError();
-		if (!catalog.Add(f)) {
-			for (const auto &s : catalog.GetError()) {
-				cerr << argv[ii+1] << ": " << s << endl;
-			}
-		}
-	}
-	
-	cout << "Apple" << ": " << catalog.gettext("Apple") << endl;
-	for (size_t ii=0; ii<30; ii++) {
-		cout << ii << ": Bean" << ": " << catalog.ngettext("Bean", "Beans", ii) << endl;
-	}
-	
-	auto index = textDomain.GetIndex();
-	cout << "Number of msgid: " << index.size() << endl;
-	return 0;
+    if (argc <= 1) {
+        cerr << "This program needs one filename." << endl;
+        return 1;
+    }
+
+    spiritless_po::Catalog catalog;
+    for (size_t ii=0; ii<static_cast<size_t>(argc)-1; ii++) {
+        ifstream f(argv[ii+1]);
+        catalog.ClearError();
+        if (!catalog.Add(f)) {
+            for (const auto &s : catalog.GetError()) {
+                cerr << argv[ii+1] << ": " << s << endl;
+            }
+        }
+    }
+
+    cout << "Apple" << ": " << catalog.gettext("Apple") << endl;
+    for (size_t ii=0; ii<30; ii++) {
+        cout << ii << ": Bean" << ": " << catalog.ngettext("Bean", "Beans", ii) << endl;
+    }
+
+    auto index = textDomain.GetIndex();
+    cout << "Number of msgid: " << index.size() << endl;
+    return 0;
 }
 ```
