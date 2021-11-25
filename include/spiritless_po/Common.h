@@ -1,16 +1,9 @@
 /* Common.h
 
-Copyright (c) 2019 OOTA, Masato
+Copyright © 2019 OOTA, Masato
 
-spiritless_po is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-spiritless_po is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+This program is distributed under the Boost Software License Version 1.0.
+You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 */
 
 #ifndef SRIRITLESS_PO_COMMON_H_
