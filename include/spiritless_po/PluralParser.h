@@ -51,12 +51,12 @@ namespace spiritless_po {
         {
         }
 
-        ExpressionError::ExpressionError(const char *whatArg, const InP &it)
+        inline ExpressionError::ExpressionError(const char *whatArg, const InP &it)
             : std::runtime_error(whatArg), pos(it)
         {
         }
 
-        const InP &ExpressionError::Where() const noexcept
+        inline const InP &ExpressionError::Where() const noexcept
         {
             return pos;
         }
