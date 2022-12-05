@@ -42,3 +42,20 @@ int main(int argc, char* argv[])
     return 0;
 }
 ```
+
+# Unit Test
+
+### Unit Test
+This library includes some unit test codes. If you want to run it, the following programs are needed:
+
+- Catch2 (Tested in version 2.13.10)
+- cmake  (Tested in Version 3.24.3)
+
+```
+% cd spiritless_po/test
+% cmake -DCMAKE_BUILD_TYPE=Release -B build .
+% cd build
+% make
+% ./test_spiritless_po
+% ./test_spiritless_po '[!benchmark]' ; # For benchmark
+```
