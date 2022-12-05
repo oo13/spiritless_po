@@ -44,8 +44,6 @@ int main(int argc, char* argv[])
 ```
 
 # Unit Test
-
-### Unit Test
 This library includes some unit test codes. If you want to run it, the following programs are needed:
 
 - Catch2 (Tested in version 2.13.10)
