@@ -11,9 +11,59 @@
 
 #include "spiritless_po/PluralParser.h"
 
+
+// Debug Version
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+//#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_COMPILE
+//#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE
+
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE DEBUG_32BIT_NUM
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
+#undef SRIRITLESS_PO_PLURAL_PARSER_H_
+#include "spiritless_po/PluralParser.h"
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE
+
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE DEBUG_32BIT_IF
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IF
+#undef SRIRITLESS_PO_PLURAL_PARSER_H_
+#include "spiritless_po/PluralParser.h"
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IF
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE
+
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE DEBUG_32BIT_ELSE
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
+#undef SRIRITLESS_PO_PLURAL_PARSER_H_
+#include "spiritless_po/PluralParser.h"
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE
+
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE DEBUG_32BIT_IF_ELSE
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IF
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
+#undef SRIRITLESS_PO_PLURAL_PARSER_H_
+#include "spiritless_po/PluralParser.h"
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IF
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE
+
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE DEBUG_32BIT_ALL
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IF
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
+#undef SRIRITLESS_PO_PLURAL_PARSER_H_
+#include "spiritless_po/PluralParser.h"
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IF
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE
+
 using namespace std;
 using namespace spiritless_po;
-using namespace spiritless_po::PluralParser;
+using NumT = PluralParser::NumT;
+
 
 /*
   This data table is derived from https://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html?id=l10n/pluralforms
@@ -69,32 +119,33 @@ using namespace spiritless_po::PluralParser;
 
 #define STR_IMPL(X) #X
 #define STR(X) STR_IMPL(X)
+#define PLURAL_FORMS(X) "Plural-Forms: nplurals=1; plural=" STR(X) ";\n"
 
 namespace {
     const size_t TOTAL_PLURAL_EXPRESSION = 22;
-    const string plural_expressions[] = {
-        STR(PE00),
-        STR(PE01),
-        STR(PE02),
-        STR(PE03),
-        STR(PE04),
-        STR(PE05),
-        STR(PE06),
-        STR(PE07),
-        STR(PE08),
-        STR(PE09),
-        STR(PE10),
-        STR(PE11),
-        STR(PE12),
-        STR(PE13),
-        STR(PE14),
-        STR(PE15),
-        STR(PE16),
-        STR(PE17),
-        STR(PE18),
-        STR(PE19),
-        STR(PE20),
-        STR(PE21),
+    const string plural_forms[] = {
+        PLURAL_FORMS(PE00),
+        PLURAL_FORMS(PE01),
+        PLURAL_FORMS(PE02),
+        PLURAL_FORMS(PE03),
+        PLURAL_FORMS(PE04),
+        PLURAL_FORMS(PE05),
+        PLURAL_FORMS(PE06),
+        PLURAL_FORMS(PE07),
+        PLURAL_FORMS(PE08),
+        PLURAL_FORMS(PE09),
+        PLURAL_FORMS(PE10),
+        PLURAL_FORMS(PE11),
+        PLURAL_FORMS(PE12),
+        PLURAL_FORMS(PE13),
+        PLURAL_FORMS(PE14),
+        PLURAL_FORMS(PE15),
+        PLURAL_FORMS(PE16),
+        PLURAL_FORMS(PE17),
+        PLURAL_FORMS(PE18),
+        PLURAL_FORMS(PE19),
+        PLURAL_FORMS(PE20),
+        PLURAL_FORMS(PE21),
     };
 
     NumT compiled_plural_00(NumT n) { return PE00; };
@@ -160,11 +211,11 @@ namespace {
 }
 
 
-TEST_CASE( "Plural Function", "[Equality]" ) {
-    vector<PluralParser::FunctionType> test_funcs;
-    for (auto &codes : plural_expressions) {
-        auto it = codes.cbegin();
-        test_funcs.push_back(ParseExpression(it, codes.cend()));
+TEMPLATE_TEST_CASE( "Plural Function", "[Equality]",  PluralParser, DEBUG_32BIT_NUM::PluralParser, DEBUG_32BIT_IF::PluralParser, DEBUG_32BIT_ELSE::PluralParser, DEBUG_32BIT_IF_ELSE::PluralParser, DEBUG_32BIT_ALL::PluralParser ) {
+    vector<typename TestType::FunctionType> test_funcs;
+    for (auto &info : plural_forms) {
+        auto it = TestType::Parse(info);
+        test_funcs.push_back(it.second);
     }
 
     auto i = GENERATE(range(0, 1000));
@@ -285,9 +336,9 @@ TEST_CASE( "Plural Function", "[Equality]" ) {
 TEST_CASE( "Plural Function Benchmark", "[!benchmark]" ) {
     const auto numbers = gen_int_vector(10000);
     vector<PluralParser::FunctionType> test_funcs;
-    for (auto &codes : plural_expressions) {
-        auto it = codes.cbegin();
-        test_funcs.push_back(ParseExpression(it, codes.cend()));
+    for (auto &info : plural_forms) {
+        auto it = PluralParser::Parse(info);
+        test_funcs.push_back(it.second);
     }
 
     BENCHMARK( STR(PE00) ) {
