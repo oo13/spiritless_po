@@ -10,11 +10,12 @@ Example:
 ```c++
 #include <fstream>
 #include <iostream>
+
 #include "spiritless_po/spiritless_po.h"
 
 using namespace std;
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     if (argc <= 1) {
         cerr << "This program needs one filename." << endl;
@@ -22,22 +23,24 @@ int main(int argc, char* argv[])
     }
 
     spiritless_po::Catalog catalog;
-    for (size_t ii=0; ii<static_cast<size_t>(argc)-1; ii++) {
-        ifstream f(argv[ii+1]);
+    for (size_t i = 0; i < static_cast<size_t>(argc) - 1; i++) {
+        ifstream f(argv[i + 1]);
         catalog.ClearError();
         if (!catalog.Add(f)) {
             for (const auto &s : catalog.GetError()) {
-                cerr << argv[ii+1] << ": " << s << endl;
+                cerr << argv[i + 1] << ": " << s << endl;
             }
         }
     }
 
-    cout << "Apple" << ": " << catalog.gettext("Apple") << endl;
-    for (size_t ii=0; ii<30; ii++) {
-        cout << ii << ": Bean" << ": " << catalog.ngettext("Bean", "Beans", ii) << endl;
+    cout << "Apple"
+         << ": " << catalog.gettext("Apple") << endl;
+    for (size_t i = 0; i < 30; i++) {
+        cout << i << ": Bean"
+             << ": " << catalog.ngettext("Bean", "Beans", i) << endl;
     }
 
-    auto index = textDomain.GetIndex();
+    auto index = catalog.GetIndex();
     cout << "Number of msgid: " << index.size() << endl;
     return 0;
 }

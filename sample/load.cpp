@@ -2,19 +2,13 @@
 
 Copyright (c) 2019 OOTA, Masato
 
-spiritless_po is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-spiritless_po is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+This is published under CC0 1.0.
+For more information, see CC0 1.0 Universal (CC0 1.0) at <https://creativecommons.org/publicdomain/zero/1.0/legalcode>.
 */
-#include "spiritless_po/spiritless_po.h"
 #include <fstream>
 #include <iostream>
+
+#include "spiritless_po/spiritless_po.h"
 
 using namespace std;
 
@@ -26,21 +20,21 @@ int main(int argc, char *argv[])
     }
 
     spiritless_po::Catalog catalog;
-    for (size_t ii = 0; ii < static_cast<size_t>(argc) - 1; ii++) {
-        ifstream f(argv[ii + 1]);
+    for (size_t i = 0; i < static_cast<size_t>(argc) - 1; i++) {
+        ifstream f(argv[i + 1]);
         catalog.ClearError();
         if (!catalog.Add(f)) {
             for (const auto &s : catalog.GetError()) {
-                cerr << argv[ii + 1] << ": " << s << endl;
+                cerr << argv[i + 1] << ": " << s << endl;
             }
         }
     }
 
-    cout << "apples"
-         << ": " << catalog.pgettext("commodity", "apples") << endl;
-    for (size_t ii = 0; ii < 30; ii++) {
-        cout << ii << ": aa"
-             << ": " << catalog.ngettext("aa", "aas", ii) << endl;
+    cout << "Apple"
+         << ": " << catalog.gettext("Apple") << endl;
+    for (size_t i = 0; i < 30; i++) {
+        cout << i << ": Bean"
+             << ": " << catalog.ngettext("Bean", "Beans", i) << endl;
     }
 
     auto index = catalog.GetIndex();
