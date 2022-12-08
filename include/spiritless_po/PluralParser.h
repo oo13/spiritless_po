@@ -61,6 +61,9 @@ namespace spiritless_po {
             friend class PluralParser;
 
         public:
+            // Default Constructible
+            FunctionType();
+
             // Copyable
             FunctionType(const FunctionType &a) = default;
             FunctionType(FunctionType &&a) = default;
@@ -69,7 +72,7 @@ namespace spiritless_po {
             FunctionType &operator=(FunctionType &&a) = default;
 
             // Users can execute the function.
-            PluralParser::NumT operator()(PluralParser::NumT n);
+            PluralParser::NumT operator()(PluralParser::NumT n) const;
 
         private:
             // Users cannot create a function.
@@ -77,11 +80,11 @@ namespace spiritless_po {
             FunctionType(const std::vector<PluralParser::Opcode> &program,
                          size_t max_data_size);
 
-            NumT Read32(size_t &i);
+            NumT Read32(size_t &i) const;
 
         private:
             std::vector<PluralParser::Opcode> code;
-            std::vector<PluralParser::NumT> data;
+            mutable std::vector<PluralParser::NumT> data;
         };
 
 
@@ -302,6 +305,11 @@ namespace spiritless_po {
 
 
 
+    inline PluralParser::FunctionType::FunctionType()
+        : FunctionType({ PluralParser::NUM, 0 }, 1)
+    {
+    }
+
     inline PluralParser::FunctionType::FunctionType(const std::vector<PluralParser::Opcode> &program,
                                              size_t max_data_size)
         : code(program), data(max_data_size + 1) // + 1 allow to check the index after accessing it.
@@ -313,7 +321,7 @@ namespace spiritless_po {
         code.push_back(END);
     }
 
-    inline PluralParser::NumT PluralParser::FunctionType::Read32(size_t &i)
+    inline PluralParser::NumT PluralParser::FunctionType::Read32(size_t &i) const
     {
         NumT n = code[i];
         n <<= 8;
@@ -325,7 +333,7 @@ namespace spiritless_po {
         return n;
     }
 
-    inline PluralParser::NumT PluralParser::FunctionType::operator()(const NumT n)
+    inline PluralParser::NumT PluralParser::FunctionType::operator()(const NumT n) const
     {
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE
         PluralParser::DebugPrintCode(code);

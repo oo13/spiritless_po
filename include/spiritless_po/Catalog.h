@@ -95,7 +95,7 @@ namespace spiritless_po {
     };
 
     inline Catalog::Catalog()
-        : metadata(), index(), stringTable(), pluralFunction([](int n) { return 0; }),
+        : metadata(), index(), stringTable(), pluralFunction(),
           maxPlurals(0), errors()
     {
     }
