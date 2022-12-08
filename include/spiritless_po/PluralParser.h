@@ -581,10 +581,15 @@ namespace spiritless_po {
             break;
         case IF32:
         case ELSE32:
-            throw ExpressionError("Bug: IF32 and ELSE32 must not push to code.", it);
+            throw ExpressionError("Bug: IF32 and ELSE32 must not be pushed to code.", it);
+            break;
+        case NOT:
+            break;
+        case END:
+            throw ExpressionError("Bug: END must not be pushed to code.", it);
             break;
         default:
-            ; // do nothing
+            throw ExpressionError("Bug: Unknown code is pushed.", it);
         }
         code.push_back(op);
     }
