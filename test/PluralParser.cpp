@@ -210,8 +210,7 @@ namespace {
     }
 }
 
-
-TEMPLATE_TEST_CASE( "Plural Function", "[Equality]",  PluralParser, DEBUG_32BIT_NUM::PluralParser, DEBUG_32BIT_IF::PluralParser, DEBUG_32BIT_ELSE::PluralParser, DEBUG_32BIT_IF_ELSE::PluralParser, DEBUG_32BIT_ALL::PluralParser ) {
+TEMPLATE_TEST_CASE( "Equality", "[PluralFunction]",  PluralParser, DEBUG_32BIT_NUM::PluralParser, DEBUG_32BIT_IF::PluralParser, DEBUG_32BIT_ELSE::PluralParser, DEBUG_32BIT_IF_ELSE::PluralParser, DEBUG_32BIT_ALL::PluralParser ) {
     vector<typename TestType::FunctionType> test_funcs;
     for (auto &info : plural_forms) {
         auto it = TestType::Parse(info);
