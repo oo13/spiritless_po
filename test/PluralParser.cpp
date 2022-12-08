@@ -9,6 +9,10 @@
 #include <string>
 #include <vector>
 
+#ifndef NDEBUG
+#define NDEBUG
+#endif
+
 #include "spiritless_po/PluralParser.h"
 
 
@@ -18,6 +22,11 @@
 #endif
 //#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_COMPILE
 //#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE
+
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE ENABLE_ASSERT
+#undef SRIRITLESS_PO_PLURAL_PARSER_H_
+#include "spiritless_po/PluralParser.h"
+#undef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE
 
 #define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE DEBUG_32BIT_NUM
 #define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
@@ -210,7 +219,7 @@ namespace {
     }
 }
 
-TEMPLATE_TEST_CASE( "Equality", "[PluralFunction]",  PluralParser, DEBUG_32BIT_NUM::PluralParser, DEBUG_32BIT_IF::PluralParser, DEBUG_32BIT_ELSE::PluralParser, DEBUG_32BIT_IF_ELSE::PluralParser, DEBUG_32BIT_ALL::PluralParser ) {
+TEMPLATE_TEST_CASE( "Equality", "[PluralFunction]",  PluralParser, ENABLE_ASSERT::PluralParser, DEBUG_32BIT_NUM::PluralParser, DEBUG_32BIT_IF::PluralParser, DEBUG_32BIT_ELSE::PluralParser, DEBUG_32BIT_IF_ELSE::PluralParser, DEBUG_32BIT_ALL::PluralParser ) {
     vector<typename TestType::FunctionType> test_funcs;
     for (auto &info : plural_forms) {
         auto it = TestType::Parse(info);
