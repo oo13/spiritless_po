@@ -63,11 +63,11 @@ namespace spiritless_po {
         const std::vector<std::string> &GetError() const;
 
         // Get the translated text.
-        const std::string gettext(const std::string &msgid) const;
-        const std::string ngettext(const std::string &msgid, const std::string &msgidPlural,
+        const std::string &gettext(const std::string &msgid) const;
+        const std::string &ngettext(const std::string &msgid, const std::string &msgidPlural,
             unsigned long int n) const;
-        const std::string pgettext(const std::string &msgctxt, const std::string &msgid) const;
-        const std::string npgettext(const std::string &msgctxt, const std::string &msgid,
+        const std::string &pgettext(const std::string &msgctxt, const std::string &msgid) const;
+        const std::string &npgettext(const std::string &msgctxt, const std::string &msgid,
             const std::string &msgidPlural, unsigned long int n) const;
 
         // Type of index.
@@ -181,7 +181,7 @@ namespace spiritless_po {
         return errors;
     }
 
-    inline const std::string Catalog::gettext(const std::string &msgid) const
+    inline const std::string &Catalog::gettext(const std::string &msgid) const
     {
         const auto &it = index.find(msgid);
         if (it != index.end()) {
@@ -191,7 +191,7 @@ namespace spiritless_po {
         }
     }
 
-    inline const std::string Catalog::ngettext(const std::string &msgid, const std::string &msgidPlural,
+    inline const std::string &Catalog::ngettext(const std::string &msgid, const std::string &msgidPlural,
         unsigned long int n) const
     {
         const auto &it = index.find(msgid);
@@ -210,7 +210,7 @@ namespace spiritless_po {
         }
     }
 
-    inline const std::string Catalog::pgettext(const std::string &msgctxt, const std::string &msgid) const
+    inline const std::string &Catalog::pgettext(const std::string &msgctxt, const std::string &msgid) const
     {
         std::string s(msgctxt);
         s += CONTEXT_SEPARATOR;
@@ -223,7 +223,7 @@ namespace spiritless_po {
         }
     }
 
-    inline const std::string Catalog::npgettext(const std::string &msgctxt, const std::string &msgid,
+    inline const std::string &Catalog::npgettext(const std::string &msgctxt, const std::string &msgid,
         const std::string &msgidPlural, unsigned long int n) const
     {
         std::string s(msgctxt);
