@@ -34,37 +34,51 @@ namespace spiritless_po {
     // The expression parser is an LL(1) parser.
     class PluralParser {
     public:
-        /* Type declarations */
-
-        // Forward declaration
+        // FunctionType to execute a plural expression.
         class FunctionType;
-        class ExpressionError;
         // Integer type for plural forms.
         // Note: The immediate number in the plural expression is always 32 bit regardless of the size of NumT.
         typedef unsigned long int NumT;
+
+        // Parse a plural form information
+        static std::pair<NumT, FunctionType> Parse(const std::string &plural_form_info);
+
+
         // Iterator type for the plural form info.
         typedef std::string::const_iterator InP;
+        // The type of exception when raised by a parse error.
+        class ExpressionError : public std::runtime_error {
+        private:
+            // Only PluralParser can create an instance of the class.
+            friend class PluralParser;
+            explicit ExpressionError(const std::string &whatArg, const InP &it);
+            explicit ExpressionError(const char *whatArg, const InP &it);
+
+        public:
+            const InP &Where() const noexcept;
+
+        private:
+            InP pos;
+        };
+
 
     private:
         // Opcode for plural function
         typedef unsigned char Opcode;
         // Another function type (Internal use)
         using CompiledPluralFunctionT = PluralParser::NumT (*)(PluralParser::NumT);
-
-        // Only PluralParser can create an instance of these friend classes.
+        // This needs a friend because it shares some private types.
         friend class PluralParser::FunctionType;
-        friend class PluralParser::ExpressionError;
 
     public:
-        /* class definitions */
-
         // FunctionType to execute a plural expression.
         class FunctionType {
         private:
+            // Only PluralParser can create an instance of this class except for default constructor.
             friend class PluralParser;
 
         public:
-            // Default Constructible
+            // Default constructible from public
             FunctionType();
 
             // Copyable
@@ -92,26 +106,6 @@ namespace spiritless_po {
             mutable std::vector<PluralParser::NumT> data;
         };
 
-
-        // The type of exception when raised by a parse error.
-        class ExpressionError : public std::runtime_error {
-        private:
-            friend class PluralParser;
-            explicit ExpressionError(const std::string &whatArg, const InP &it);
-            explicit ExpressionError(const char *whatArg, const InP &it);
-
-        public:
-            const InP &Where() const noexcept;
-
-        private:
-            InP pos;
-        };
-
-    public:
-        /* function declarations */
-
-        // Parse a plural form information
-        static std::pair<NumT, FunctionType> Parse(const std::string &plural_form_info);
 
     private:
         PluralParser();
@@ -149,9 +143,8 @@ namespace spiritless_po {
         static void DebugPrintCode(const std::vector<Opcode> &cd);
         void DebugPrintCode() const;
 
-    private:
-        /* type definitions */
 
+        /* for interpriter */
         enum : Opcode {
             NUM,
             NUM32,
@@ -177,7 +170,7 @@ namespace spiritless_po {
             END,
         };
 
-    private:
+
         /* data members */
         std::vector<Opcode> code;
         size_t top_of_data;
