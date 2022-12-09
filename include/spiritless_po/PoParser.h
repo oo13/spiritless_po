@@ -27,31 +27,6 @@ namespace spiritless_po {
     private:
         // Reading position type.
         template <class INP>
-        class PositionT;
-
-    public:
-        // Parse Error in PO file.
-        template <class INP>
-        class PoParseError : public std::runtime_error {
-            // Only PluralParser can create an instance of this class.
-            friend class PoParser;
-
-        private:
-            explicit PoParseError(const std::string &whatArg, const PositionT<INP> &it);
-            explicit PoParseError(const char *whatArg, const PositionT<INP> &it);
-
-        public:
-            // Get the error location.
-            const PositionT<INP> &GetLocation() const noexcept;
-
-        private:
-            PositionT<INP> loc;
-        };
-
-
-    private:
-        // Reading position type.
-        template <class INP>
         class PositionT {
         public:
             PositionT(const INP &it, const INP &end, std::size_t line = 1, std::size_t column = 1);
@@ -68,6 +43,24 @@ namespace spiritless_po {
             INP endIt;
             std::size_t lineNumber;
             std::size_t columnNumber;
+        };
+
+        // Parse Error in PO file.
+        template <class INP>
+        class PoParseError : public std::runtime_error {
+            // Only PluralParser can create an instance of this class.
+            friend class PoParser;
+
+        private:
+            explicit PoParseError(const std::string &whatArg, const PositionT<INP> &it);
+            explicit PoParseError(const char *whatArg, const PositionT<INP> &it);
+
+        public:
+            // Get the error location.
+            const PositionT<INP> &GetLocation() const noexcept;
+
+        private:
+            PositionT<INP> loc;
         };
 
         // Type of a line.
