@@ -48,14 +48,10 @@ namespace spiritless_po {
         // Parse Error in PO file.
         template <class INP>
         class PoParseError : public std::runtime_error {
-            // Only PluralParser can create an instance of this class.
-            friend class PoParser;
-
-        private:
+        public:
             explicit PoParseError(const std::string &whatArg, const PositionT<INP> &it);
             explicit PoParseError(const char *whatArg, const PositionT<INP> &it);
 
-        public:
             // Get the error location.
             const PositionT<INP> &GetLocation() const noexcept;
 
