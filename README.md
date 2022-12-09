@@ -11,7 +11,7 @@ Example:
 #include <fstream>
 #include <iostream>
 
-#include "spiritless_po/spiritless_po.h"
+#include "spiritless_po.h"
 
 using namespace std;
 
