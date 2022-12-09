@@ -15,6 +15,7 @@ You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 #include <iterator>
 #include <stdexcept>
 #include <string>
+#include <map>
 #include <vector>
 
 #if (defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE) || defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER_COMPILE)) && !defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER)
@@ -47,6 +48,8 @@ namespace spiritless_po {
     private:
         // Opcode for plural function
         typedef unsigned char Opcode;
+        // Another function type (Internal use)
+        using CompiledPluralFunctionT = PluralParser::NumT (*)(PluralParser::NumT);
 
         // Only PluralParser can create an instance of these friend classes.
         friend class PluralParser::FunctionType;
@@ -79,10 +82,12 @@ namespace spiritless_po {
             // program and max_data_size must be bug-free.
             FunctionType(const std::vector<PluralParser::Opcode> &program,
                          size_t max_data_size);
+            FunctionType(CompiledPluralFunctionT func);
 
             NumT Read32(size_t &i) const;
 
         private:
+            CompiledPluralFunctionT compiled_func;
             std::vector<PluralParser::Opcode> code;
             mutable std::vector<PluralParser::NumT> data;
         };
@@ -115,6 +120,7 @@ namespace spiritless_po {
         static void SkipSpaces(InP &it, const InP &end);
         static NumT GetNumber(InP &it, const InP &end);
         static std::pair<InP, InP> GetExpression(const InP &it, const InP &end, const std::string &keyword);
+        FunctionType CreatePluralFunction();
         static FunctionType ParseExpression(InP &it, const InP &end);
         void PushOpcode(Opcode op, const InP &it);
         size_t PushIForELSEandAddress(Opcode op, const InP &it);
@@ -306,19 +312,26 @@ namespace spiritless_po {
 
 
     inline PluralParser::FunctionType::FunctionType()
-        : FunctionType({ PluralParser::NUM, 0 }, 1)
+        : FunctionType([](NumT n) -> NumT { return 0; })
     {
     }
 
     inline PluralParser::FunctionType::FunctionType(const std::vector<PluralParser::Opcode> &program,
-                                             size_t max_data_size)
-        : code(program), data(max_data_size + 1) // + 1 allow to check the index after accessing it.
+                                                    size_t max_data_size)
+        : compiled_func(nullptr),
+          code(program),
+          data(max_data_size + 1) // + 1 allow to check the index after accessing it.
     {
         // We can read an item at the current position + 4 without checking.
         code.push_back(END);
         code.push_back(END);
         code.push_back(END);
         code.push_back(END);
+    }
+
+    inline PluralParser::FunctionType::FunctionType(CompiledPluralFunctionT func)
+        : compiled_func(func), code(0), data(0)
+    {
     }
 
     inline PluralParser::NumT PluralParser::FunctionType::Read32(size_t &i) const
@@ -335,6 +348,10 @@ namespace spiritless_po {
 
     inline PluralParser::NumT PluralParser::FunctionType::operator()(const NumT n) const
     {
+        if (compiled_func) {
+            return compiled_func(n);
+        }
+
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE
         PluralParser::DebugPrintCode(code);
 #endif
@@ -532,6 +549,126 @@ namespace spiritless_po {
         return std::make_pair(begin, curIt);
     }
 
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_INTERPRETER
+    inline PluralParser::FunctionType PluralParser::CreatePluralFunction()
+    {
+        return FunctionType(code, max_data_size);
+    }
+#else
+    /*
+      These plural expressions is derived from lib/plurals.js in "https://github.com/alexanderwallin/node-gettext". It's published by a sort of MIT License but we have no need to show the copyright notice and the permission notice because the second sentence is removed.
+
+      Copyright (c) 2011-2012 Andris Reinman
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy
+      of this software and associated documentation files (the "Software"), to deal
+      in the Software without restriction, including without limitation the rights
+      to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+      copies of the Software, and to permit persons to whom the Software is
+      furnished to do so, subject to the following conditions:
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+      AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      SOFTWARE.
+    */
+    inline PluralParser::FunctionType PluralParser::CreatePluralFunction()
+    {
+        static std::map<decltype(code), CompiledPluralFunctionT> func_map {
+            {
+                { NUM, 0 },
+                [](NumT n) -> NumT { return 0; }
+            },
+            {
+                { VAR, NUM, 1, EQ, VAR, NUM, 10, MOD, NUM, 1, EQ, OR, IF, 4, NUM, 0, ELSE, 2, NUM, 1 },
+                [](NumT n) -> NumT { return n == 1 || n % 10 == 1 ? 0 : 1; }
+            },
+            {
+                { VAR, NUM, 0, NE },
+                [](NumT n) -> NumT { return n != 0; }
+            },
+            {
+                { VAR, NUM, 1, NE },
+                [](NumT n) -> NumT { return n != 1; }
+            },
+            {
+                { VAR, NUM, 1, GT },
+                [](NumT n) -> NumT { return n > 1; }
+            },
+            {
+                { VAR, NUM, 10, MOD, NUM, 1, NE, VAR, NUM, 100, MOD, NUM, 11, EQ, OR },
+                [](NumT n) -> NumT { return n % 10 != 1 || n % 100 == 11; }
+            },
+            {
+                { VAR, NUM, 10, MOD, NUM, 1, EQ, VAR, NUM, 100, MOD, NUM, 11, NE, AND, IF, 4, NUM, 0, ELSE, 12, VAR, NUM, 0, NE, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                [](NumT n) -> NumT { return n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2; }
+            },
+            {
+                { VAR, NUM, 10, MOD, NUM, 1, EQ, VAR, NUM, 100, MOD, NUM, 11, NE, AND, IF, 4, NUM, 0, ELSE, 31, VAR, NUM, 10, MOD, NUM, 2, GE, VAR, NUM, 100, MOD, NUM, 10, LT, VAR, NUM, 100, MOD, NUM, 20, GE, OR, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                [](NumT n) -> NumT { return n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; }
+            },
+            {
+                { VAR, NUM, 10, MOD, NUM, 1, EQ, VAR, NUM, 100, MOD, NUM, 11, NE, AND, IF, 4, NUM, 0, ELSE, 39, VAR, NUM, 10, MOD, NUM, 2, GE, VAR, NUM, 10, MOD, NUM, 4, LE, VAR, NUM, 100, MOD, NUM, 10, LT, VAR, NUM, 100, MOD, NUM, 20, GE, OR, AND, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                [](NumT n) -> NumT { return n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; }
+            },
+            {
+                { VAR, NUM, 0, EQ, IF, 4, NUM, 0, ELSE, 12, VAR, NUM, 1, EQ, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                [](NumT n) -> NumT { return n == 0 ? 0 : n == 1 ? 1 : 2; }
+            },
+            {
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 28, VAR, NUM, 0, EQ, VAR, NUM, 100, MOD, NUM, 0, GT, VAR, NUM, 100, MOD, NUM, 20, LT, AND, OR, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                [](NumT n) -> NumT { return n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2; }
+            },
+            {
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 39, VAR, NUM, 10, MOD, NUM, 2, GE, VAR, NUM, 10, MOD, NUM, 4, LE, VAR, NUM, 100, MOD, NUM, 10, LT, VAR, NUM, 100, MOD, NUM, 20, GE, OR, AND, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                [](NumT n) -> NumT { return n == 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; }
+            },
+            {
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 17, VAR, NUM, 2, GE, VAR, NUM, 4, LE, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                [](NumT n) -> NumT { return n == 1 ? 0 : (n >= 2 && n <= 4) ? 1 : 2; }
+            },
+            {
+                { VAR, NUM, 100, MOD, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 36, VAR, NUM, 100, MOD, NUM, 2, EQ, IF, 4, NUM, 1, ELSE, 23, VAR, NUM, 100, MOD, NUM, 3, EQ, VAR, NUM, 100, MOD, NUM, 4, EQ, OR, IF, 4, NUM, 2, ELSE, 2, NUM, 3 },
+                [](NumT n) -> NumT { return n % 100 == 1 ? 0 : n % 100 == 2 ? 1 : n % 100 == 3 || n % 100 == 4 ? 2 : 3; }
+            },
+            {
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 49, VAR, NUM, 0, EQ, VAR, NUM, 100, MOD, NUM, 1, GT, VAR, NUM, 100, MOD, NUM, 11, LT, AND, OR, IF, 4, NUM, 1, ELSE, 23, VAR, NUM, 100, MOD, NUM, 10, GT, VAR, NUM, 100, MOD, NUM, 20, LT, AND, IF, 4, NUM, 2, ELSE, 2, NUM, 3 },
+                [](NumT n) -> NumT { return n == 1 ? 0 : n == 0 || ( n % 100 > 1 && n % 100 < 11) ? 1 : (n % 100 > 10 && n % 100 < 20 ) ? 2 : 3; }
+            },
+            {
+                { VAR, NUM, 1, EQ, VAR, NUM, 11, EQ, OR, IF, 4, NUM, 0, ELSE, 32, VAR, NUM, 2, EQ, VAR, NUM, 12, EQ, OR, IF, 4, NUM, 1, ELSE, 17, VAR, NUM, 2, GT, VAR, NUM, 20, LT, AND, IF, 4, NUM, 2, ELSE, 2, NUM, 3 },
+                [](NumT n) -> NumT { return (n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3; }
+            },
+            {
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 27, VAR, NUM, 2, EQ, IF, 4, NUM, 1, ELSE, 17, VAR, NUM, 8, NE, VAR, NUM, 11, NE, AND, IF, 4, NUM, 2, ELSE, 2, NUM, 3 },
+                [](NumT n) -> NumT { return n == 1 ? 0 : n == 2 ? 1 : (n != 8 && n != 11) ? 2 : 3; }
+            },
+            {
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 22, VAR, NUM, 2, EQ, IF, 4, NUM, 1, ELSE, 12, VAR, NUM, 3, EQ, IF, 4, NUM, 2, ELSE, 2, NUM, 3 },
+                [](NumT n) -> NumT { return n == 1 ? 0 : n == 2 ? 1 : n == 3 ? 2 : 3; }
+            },
+            {
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 32, VAR, NUM, 2, EQ, IF, 4, NUM, 1, ELSE, 22, VAR, NUM, 7, LT, IF, 4, NUM, 2, ELSE, 12, VAR, NUM, 11, LT, IF, 4, NUM, 3, ELSE, 2, NUM, 4 },
+                [](NumT n) -> NumT { return n == 1 ? 0 : n == 2 ? 1 : n < 7 ? 2 : n < 11 ? 3 : 4; }
+            },
+            {
+                { VAR, NUM, 0, EQ, IF, 4, NUM, 0, ELSE, 56, VAR, NUM, 1, EQ, IF, 4, NUM, 1, ELSE, 46, VAR, NUM, 2, EQ, IF, 4, NUM, 2, ELSE, 36, VAR, NUM, 100, MOD, NUM, 3, GE, VAR, NUM, 100, MOD, NUM, 10, LE, AND, IF, 4, NUM, 3, ELSE, 15, VAR, NUM, 100, MOD, NUM, 11, GE, IF, 4, NUM, 4, ELSE, 2, NUM, 5 },
+                [](NumT n) -> NumT { return n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5; }
+            },
+        };
+        auto it = func_map.find(code);
+        if (it != func_map.end()) {
+            return FunctionType(it->second);
+        } else {
+            return FunctionType(code, max_data_size);
+        }
+    }
+    /* End of the derived work. */
+#endif
+
     // This is a parser of the plural expression, and returns the decision function.
     // InP is an input iterator type.
     // start = term7;
@@ -545,8 +682,7 @@ namespace spiritless_po {
 #endif
         if (it == end) {
             if (result.top_of_data == 1) {
-                PluralParser::FunctionType f(result.code, result.max_data_size);
-                return f;
+                return result.CreatePluralFunction();
             } else {
                 throw ExpressionError("Bug: Invalid data stack level.", it);
             }
