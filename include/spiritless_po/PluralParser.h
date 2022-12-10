@@ -51,11 +51,11 @@ namespace spiritless_po {
         private:
             // Only PluralParser can create an instance of the class.
             friend class PluralParser;
-            explicit ExpressionError(const std::string &whatArg, const InP &it);
-            explicit ExpressionError(const char *whatArg, const InP &it);
+            explicit ExpressionError(const std::string &whatArg, InP it);
+            explicit ExpressionError(const char *whatArg, InP it);
 
         public:
-            const InP &Where() const noexcept;
+            InP Where() const noexcept;
 
         private:
             InP pos;
@@ -111,32 +111,32 @@ namespace spiritless_po {
         PluralParser();
         ~PluralParser() = default;
 
-        static void SkipSpaces(InP &it, const InP &end);
-        static NumT GetNumber(InP &it, const InP &end);
-        static std::pair<InP, InP> GetExpression(const InP &it, const InP &end, const std::string &keyword);
+        static void SkipSpaces(InP &it, InP end);
+        static NumT GetNumber(InP &it, InP end);
+        static std::pair<InP, InP> GetExpression(InP it, InP end, const std::string &keyword);
         FunctionType CreatePluralFunction();
-        static FunctionType ParseExpression(InP &it, const InP &end);
-        void PushOpcode(Opcode op, const InP &it);
-        size_t PushIForELSEandAddress(Opcode op, const InP &it);
+        static FunctionType ParseExpression(InP &it, InP end);
+        void PushOpcode(Opcode op, InP it);
+        size_t PushIForELSEandAddress(Opcode op, InP it);
         void InsertAddress32(size_t adrs_index, size_t jump_length);
-        void AdjustJumpAddress(size_t if_adrs_index, size_t else_adrs_index, const InP &it);
-        void PushImmediateNumber(NumT n, const InP &it);
-        void ParseTerm7(InP &it, const InP &end);
-        void ParseTerm71(InP &it, const InP &end);
-        void ParseTerm6(InP &it, const InP &end);
-        void ParseTerm61(InP &it, const InP &end);
-        void ParseTerm5(InP &it, const InP &end);
-        void ParseTerm51(InP &it, const InP &end);
-        void ParseTerm4(InP &it, const InP &end);
-        void ParseTerm41(InP &it, const InP &end);
-        void ParseTerm3(InP &it, const InP &end);
-        void ParseTerm31(InP &it, const InP &end);
-        void ParseTerm2(InP &it, const InP &end);
-        void ParseTerm21(InP &it, const InP &end);
-        void ParseTerm1(InP &it, const InP &end);
-        void ParseTerm11(InP &it, const InP &end);
-        void ParseTerm0(InP &it, const InP &end);
-        void ParseValue(InP &it, const InP &end);
+        void AdjustJumpAddress(size_t if_adrs_index, size_t else_adrs_index, InP it);
+        void PushImmediateNumber(NumT n, InP it);
+        void ParseTerm7(InP &it, InP end);
+        void ParseTerm71(InP &it, InP end);
+        void ParseTerm6(InP &it, InP end);
+        void ParseTerm61(InP &it, InP end);
+        void ParseTerm5(InP &it, InP end);
+        void ParseTerm51(InP &it, InP end);
+        void ParseTerm4(InP &it, InP end);
+        void ParseTerm41(InP &it, InP end);
+        void ParseTerm3(InP &it, InP end);
+        void ParseTerm31(InP &it, InP end);
+        void ParseTerm2(InP &it, InP end);
+        void ParseTerm21(InP &it, InP end);
+        void ParseTerm1(InP &it, InP end);
+        void ParseTerm11(InP &it, InP end);
+        void ParseTerm0(InP &it, InP end);
+        void ParseValue(InP &it, InP end);
 
         // for debug
         static void DebugPrintOpcode(Opcode op);
@@ -462,17 +462,17 @@ namespace spiritless_po {
 
 
 
-    inline PluralParser::ExpressionError::ExpressionError(const std::string &whatArg, const InP &it)
+    inline PluralParser::ExpressionError::ExpressionError(const std::string &whatArg, const InP it)
         : std::runtime_error(whatArg), pos(it)
     {
     }
 
-    inline PluralParser::ExpressionError::ExpressionError(const char *whatArg, const InP &it)
+    inline PluralParser::ExpressionError::ExpressionError(const char *whatArg, const InP it)
         : std::runtime_error(whatArg), pos(it)
     {
     }
 
-    inline const PluralParser::InP &PluralParser::ExpressionError::Where() const noexcept
+    inline PluralParser::InP PluralParser::ExpressionError::Where() const noexcept
     {
         return pos;
     }
@@ -497,7 +497,7 @@ namespace spiritless_po {
 
 
     // Skip spaces (Utility function)
-    inline void PluralParser::SkipSpaces(InP &it, const InP &end)
+    inline void PluralParser::SkipSpaces(InP &it, const InP end)
     {
         while (it != end && std::isspace(static_cast<unsigned char>(*it))) {
             ++it;
@@ -505,7 +505,7 @@ namespace spiritless_po {
     }
 
     // get a number. (Utility function)
-    inline PluralParser::NumT PluralParser::GetNumber(InP &it, const InP &end)
+    inline PluralParser::NumT PluralParser::GetNumber(InP &it, const InP end)
     {
         std::string s;
         while (it != end && std::isdigit(static_cast<unsigned char>(*it))) {
@@ -519,11 +519,11 @@ namespace spiritless_po {
 
     // get a expression. (Utility function)
     inline std::pair<PluralParser::InP, PluralParser::InP>
-    PluralParser::GetExpression(const InP &it, const InP &end, const std::string &keyword)
+    PluralParser::GetExpression(const InP begin, const InP end, const std::string &keyword)
     {
-        auto curIt = std::find_end(it, end, keyword.cbegin(), keyword.cend());
+        auto curIt = std::find_end(begin, end, keyword.cbegin(), keyword.cend());
         if (curIt == end) {
-            throw ExpressionError("Parse error: '" + keyword + "' is not found.", it);
+            throw ExpressionError("Parse error: '" + keyword + "' is not found.", begin);
         }
         std::advance(curIt, keyword.length());
         SkipSpaces(curIt, end);
@@ -532,14 +532,14 @@ namespace spiritless_po {
         }
         ++curIt;
         SkipSpaces(curIt, end);
-        const InP begin = curIt;
+        const InP find_pos = curIt;
         while (curIt != end && *curIt != ';') {
             ++curIt;
         }
         if (*curIt != ';') {
             throw ExpressionError("';' is expected.", curIt);
         }
-        return std::make_pair(begin, curIt);
+        return std::make_pair(find_pos, curIt);
     }
 
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_INTERPRETER
@@ -665,7 +665,7 @@ namespace spiritless_po {
     // This is a parser of the plural expression, and returns the decision function.
     // InP is an input iterator type.
     // start = term7;
-    inline PluralParser::FunctionType PluralParser::ParseExpression(InP &it, const InP &end)
+    inline PluralParser::FunctionType PluralParser::ParseExpression(InP &it, const InP end)
     {
         PluralParser result;
         result.ParseTerm7(it, end);
@@ -687,7 +687,7 @@ namespace spiritless_po {
 
 
     // Push opcode to this->code and adjust top_of_data and max_data_size.
-    inline void PluralParser::PushOpcode(const Opcode op, const InP &it)
+    inline void PluralParser::PushOpcode(const Opcode op, const InP it)
     {
         switch (op) {
         case NUM:
@@ -733,7 +733,7 @@ namespace spiritless_po {
 
     // Push IF or ELSE
     // return relative_address_index for IF and ELSE.
-    inline size_t PluralParser::PushIForELSEandAddress(const Opcode op, const InP &it)
+    inline size_t PluralParser::PushIForELSEandAddress(const Opcode op, const InP it)
     {
         PushOpcode(op, it);
         const size_t index = code.size();
@@ -755,7 +755,7 @@ namespace spiritless_po {
 
     // Adjust the jump addresses in an IF-ELSE block.
     // The location of END-IF is code.end().
-    inline void PluralParser::AdjustJumpAddress(const size_t if_adrs_index, size_t else_adrs_index, const InP &it)
+    inline void PluralParser::AdjustJumpAddress(const size_t if_adrs_index, size_t else_adrs_index, const InP it)
     {
         if (if_adrs_index < 1) {
             throw ExpressionError("Bug: The index of an address must be more than 0.", it);
@@ -805,7 +805,7 @@ namespace spiritless_po {
     }
 
     // Push an immediate number into code.
-    inline void PluralParser::PushImmediateNumber(const NumT n, const InP &it)
+    inline void PluralParser::PushImmediateNumber(const NumT n, const InP it)
     {
 #ifndef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
         if (n <= 0xFF) {
@@ -826,14 +826,14 @@ namespace spiritless_po {
 
     // Lower level parsers.
     // term7 = term6, term71;
-    inline void PluralParser::ParseTerm7(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm7(InP &it, const InP end)
     {
         ParseTerm6(it, end);
         ParseTerm71(it, end);
     }
 
     // term71 = e | '?', term7, ':', term7;
-    inline void PluralParser::ParseTerm71(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm71(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end && *it == '?') {
@@ -853,14 +853,14 @@ namespace spiritless_po {
     }
 
     // term6 = term5, term61;
-    inline void PluralParser::ParseTerm6(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm6(InP &it, const InP end)
     {
         ParseTerm5(it, end);
         ParseTerm61(it, end);
     }
 
     // term61 = e | '||', term6;
-    inline void PluralParser::ParseTerm61(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm61(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end && *it == '|') {
@@ -876,14 +876,14 @@ namespace spiritless_po {
     }
 
     // term5 = term4, term51;
-    inline void PluralParser::ParseTerm5(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm5(InP &it, const InP end)
     {
         ParseTerm4(it, end);
         ParseTerm51(it, end);
     }
 
     // term51 = e | '&&', term5;
-    inline void PluralParser::ParseTerm51(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm51(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end && *it == '&') {
@@ -899,14 +899,14 @@ namespace spiritless_po {
     }
 
     // term4 = term3, term41;
-    inline void PluralParser::ParseTerm4(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm4(InP &it, const InP end)
     {
         ParseTerm3(it, end);
         ParseTerm41(it, end);
     }
 
     // term41 = e | '==', term4 | '!=', term4;
-    inline void PluralParser::ParseTerm41(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm41(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end && (*it == '=' || *it == '!')) {
@@ -927,14 +927,14 @@ namespace spiritless_po {
     }
 
     // term3 = term2, term31;
-    inline void PluralParser::ParseTerm3(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm3(InP &it, const InP end)
     {
         ParseTerm2(it, end);
         ParseTerm31(it, end);
     }
 
     // term31 = e | '<', term3 | '<=', term3 | '>', term3 | '<=', term3;
-    inline void PluralParser::ParseTerm31(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm31(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end && (*it == '<' || *it == '>')) {
@@ -962,14 +962,14 @@ namespace spiritless_po {
     }
 
     // term2 = term1, term21;
-    inline void PluralParser::ParseTerm2(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm2(InP &it, const InP end)
     {
         ParseTerm1(it, end);
         ParseTerm21(it, end);
     }
 
     // term21 = e | '+', term2 | '-', term2;
-    inline void PluralParser::ParseTerm21(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm21(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end && (*it == '+' || *it == '-')) {
@@ -985,14 +985,14 @@ namespace spiritless_po {
     }
 
     // term1 = term0, term11;
-    inline void PluralParser::ParseTerm1(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm1(InP &it, const InP end)
     {
         ParseTerm0(it, end);
         ParseTerm11(it, end);
     }
 
     // term11 = e | '*', term1 | '/', term1 | '%', term1;
-    inline void PluralParser::ParseTerm11(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm11(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end && (*it == '*' || *it == '/' || *it == '%')) {
@@ -1010,7 +1010,7 @@ namespace spiritless_po {
     }
 
     // term0 = {'!'} value;
-    inline void PluralParser::ParseTerm0(InP &it, const InP &end)
+    inline void PluralParser::ParseTerm0(InP &it, const InP end)
     {
         bool isNot = false;
         for (;;) {
@@ -1030,7 +1030,7 @@ namespace spiritless_po {
 
     // value = 'n' | digit, {digit} | '(', term7, ')';
     // digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-    inline void PluralParser::ParseValue(InP &it, const InP &end)
+    inline void PluralParser::ParseValue(InP &it, const InP end)
     {
         SkipSpaces(it, end);
         if (it != end) {

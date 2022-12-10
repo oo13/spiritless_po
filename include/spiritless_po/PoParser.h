@@ -22,14 +22,14 @@ namespace spiritless_po {
     public:
         // Parse all catalog entries.
         template <class INP>
-        static std::vector<CatalogEntryT> GetEntries(INP &begin, const INP &end);
+        static std::vector<CatalogEntryT> GetEntries(INP begin, INP end);
 
     private:
         // Reading position type.
         template <class INP>
         class PositionT {
         public:
-            PositionT(const INP &it, const INP &end, std::size_t line = 1, std::size_t column = 1);
+            PositionT(INP it, INP end, std::size_t line = 1, std::size_t column = 1);
 
             bool IsEnd() const;
             bool IsNotEnd() const;
@@ -127,7 +127,7 @@ namespace spiritless_po {
 
 
     template <class INP>
-    PoParser::PositionT<INP>::PositionT(const INP &it, const INP &end, std::size_t line, std::size_t column)
+    PoParser::PositionT<INP>::PositionT(const INP it, const INP end, std::size_t line, std::size_t column)
         : curIt(it), endIt(end), lineNumber(line), columnNumber(column)
     {
     }
@@ -567,7 +567,7 @@ namespace spiritless_po {
 
     // Parse all catalog entries.
     template <class INP>
-    std::vector<CatalogEntryT> PoParser::GetEntries(INP &begin, const INP &end)
+    std::vector<CatalogEntryT> PoParser::GetEntries(const INP begin, const INP end)
     {
         std::vector<CatalogEntryT> entries;
         PositionT<INP> pos(begin, end);

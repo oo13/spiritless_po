@@ -43,7 +43,7 @@ namespace spiritless_po {
         // An entry will not be added if its msgstr[0] is empty.
         // It returns true if no error is existed.
         template <class INP>
-        bool Add(INP &it, const INP &end);
+        bool Add(INP begin, INP end);
 
         // Add another istream contents.
         // This function will not change any existed values including metadata.
@@ -112,7 +112,7 @@ namespace spiritless_po {
     }
 
     template <class INP>
-    bool Catalog::Add(INP &begin, const INP &end)
+    bool Catalog::Add(const INP begin, const INP end)
     {
         std::vector<CatalogEntryT> newEntries(PoParser::GetEntries(begin, end));
         for (const auto &it : newEntries) {
