@@ -120,11 +120,13 @@ namespace spiritless_po {
                 errors.push_back(std::move(it.error));
             } else if (!it.msgstr[0].empty()) {
                 if (!it.msgid.empty()) {
-                    IndexDataT idx;
-                    idx.stringTableIndex = stringTable.size();
-                    idx.totalPlurals = it.msgstr.size();
-                    stringTable.insert(stringTable.end(), it.msgstr.begin(), it.msgstr.end());
-                    index.emplace(it.msgid, idx);
+                    if (index.find(it.msgid) == index.end()) {
+                        IndexDataT idx;
+                        idx.stringTableIndex = stringTable.size();
+                        idx.totalPlurals = it.msgstr.size();
+                        stringTable.insert(stringTable.end(), it.msgstr.begin(), it.msgstr.end());
+                        index.emplace(it.msgid, idx);
+                    }
                 } else if (metadata.empty()) {
                     metadata = MetadataParser::Parse(it.msgstr[0]);
                     const auto plural = metadata.find("Plural-Forms");
@@ -162,12 +164,18 @@ namespace spiritless_po {
             pluralFunction = a.pluralFunction;
             maxPlurals = a.maxPlurals;
         }
-        const std::size_t origSize = stringTable.size();
-        stringTable.insert(stringTable.end(), a.stringTable.begin(), a.stringTable.end());
-        for (const auto &idx : a.index) {
-            auto modifyedIdx = idx.second;
-            modifyedIdx.stringTableIndex += origSize;
-            index.emplace(idx.first, modifyedIdx);
+        for (const auto &src : a.index) {
+            if (index.find(src.first) == index.end()) {
+                auto srcIndexData = src.second;
+                auto srcIndex = srcIndexData.stringTableIndex;
+                auto srcTotal = srcIndexData.totalPlurals;
+                auto srcStringIt = a.stringTable.begin() + srcIndex;
+                IndexDataT idx;
+                idx.stringTableIndex = stringTable.size();
+                idx.totalPlurals = srcTotal;
+                stringTable.insert(stringTable.end(), srcStringIt, srcStringIt + srcTotal);
+                index.emplace(src.first, idx);
+            }
         }
     }
 
