@@ -60,7 +60,7 @@ Use doxygen. I tested the generation in doxygen 1.9.4.
 ```
 % cd spiritless_po
 % doxygen spiritless_po.doxygen
-# Open prec_ctrl/html/index.html with your HTML browser.
+# Open spiritless_po/html/index.html with your HTML browser.
 ```
 
 # Unit Test
