@@ -92,7 +92,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             friend class PluralParser;
 
         public:
-            /** The function that returns 0. */
+            /** Create the function that returns 0. */
             FunctionType();
 
             /** This class is copyable.
