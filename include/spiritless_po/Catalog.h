@@ -158,11 +158,10 @@ namespace spiritless_po {
 
     inline void Catalog::Merge(const Catalog &a)
     {
-        const auto &it = index.find("");
-        if (it == index.end()) {
-            // This had no metadata.
-            pluralFunction = a.pluralFunction;
+        if (metadata.empty()) {
+            metadata = a.metadata;
             maxPlurals = a.maxPlurals;
+            pluralFunction = a.pluralFunction;
         }
         for (const auto &src : a.index) {
             if (index.find(src.first) == index.end()) {
@@ -177,6 +176,7 @@ namespace spiritless_po {
                 index.emplace(src.first, idx);
             }
         }
+        errors.insert(errors.end(), a.errors.begin(), a.errors.end());
     }
 
     inline void Catalog::ClearError()
