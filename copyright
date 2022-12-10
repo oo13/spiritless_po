@@ -19,7 +19,7 @@ Files: sample/load.cpp
 Copyright: © 2019 OOTA, Masato
 License: CC0-1.0
 
-Files: test/CMakeLists.txt test/main.cpp
+Files: test/CMakeLists.txt test/main.cpp sample/dump.cpp
 Copyright: © 2022 OOTA, Masato
 License: CC0-1.0
 
