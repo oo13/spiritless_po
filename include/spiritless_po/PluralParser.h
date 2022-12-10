@@ -1,9 +1,12 @@
-/* PluralParser.h
-
-Copyright © 2019, 2022 OOTA, Masato
-
-This program is distributed under the Boost Software License Version 1.0.
-You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+/** Plural forms information parser.
+    \file PluralParser.h
+    \author OOTA, Masato
+    \copyright Copyright © 2019, 2022 OOTA, Masato
+    \par License Boost
+    \parblock
+      This program is distributed under the Boost Software License Version 1.0.
+      You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+    \endparblock
 */
 
 #ifndef SRIRITLESS_PO_PLURAL_PARSER_H_
@@ -27,26 +30,32 @@ You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 
 namespace spiritless_po {
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE
-    namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
+namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
 #endif
 
-    // This is a parser of the plural form information, including the expression.
-    // The expression parser is an LL(1) parser.
+    /** This class is a parser for the plural form information, including the expression. */
     class PluralParser {
     public:
-        // FunctionType to execute a plural expression.
+        // The plural expression parser is an LL(1) parser.
+        // The type of the function to execute a plural expression.
         class FunctionType;
-        // Integer type for plural forms.
-        // Note: The immediate number in the plural expression is always 32 bit regardless of the size of NumT.
+        /** The integer type for the plural forms.
+            \note The enough size of the immediate number in the plural expression is 32 bits regardless of the size of NumT.
+        */
         typedef unsigned long int NumT;
 
-        // Parse a plural form information
+        /** Parse a plural form information.
+            \param [in] plural_form_info A plural form information.
+            \return The pair of the number of the plurals and the function to calculate the plural expression.
+
+            This function parses a plural form information, such as "Plural-Forms: nplurals=2; plural=n != 1;". The result is the pair of 2 and the equivalent to [](NumT n) -> NumT { return n != 1; }.
+        */
         static std::pair<NumT, FunctionType> Parse(const std::string &plural_form_info);
 
 
-        // Iterator type for the plural form info.
+        /** The iterator type for the plural form information. */
         typedef std::string::const_iterator InP;
-        // The type of exception when raised by a parse error.
+        /** The type of exception when raised by a parse error. */
         class ExpressionError : public std::runtime_error {
         private:
             // Only PluralParser can create an instance of the class.
@@ -55,6 +64,11 @@ namespace spiritless_po {
             explicit ExpressionError(const char *whatArg, InP it);
 
         public:
+            /** Get the position where the error occurs.
+                \return The position where the error occurs.
+                \note what() returns the error message.
+                \note The return value is the iterator for the input parameter of PluralParser::Parse().
+            */
             InP Where() const noexcept;
 
         private:
@@ -71,24 +85,44 @@ namespace spiritless_po {
         friend class PluralParser::FunctionType;
 
     public:
-        // FunctionType to execute a plural expression.
+        /** The type of the function to execute a plural expression. */
         class FunctionType {
         private:
             // Only PluralParser can create an instance of this class except for default constructor.
             friend class PluralParser;
 
         public:
-            // Default constructible from public
+            /** The function that returns 0. */
             FunctionType();
 
-            // Copyable
+            /** This class is copyable.
+                \param [in] a The source.
+            */
             FunctionType(const FunctionType &a) = default;
+
+            /** This class is movable.
+                \param [in] a The source.
+            */
             FunctionType(FunctionType &&a) = default;
+
+            /** This class is descructible. */
             ~FunctionType() = default;
+
+            /** This class is assignable.
+                \param [in] a The source.
+            */
             FunctionType &operator=(const FunctionType &a) = default;
+
+            /** This class is move assignable.
+                \param [in] a The source.
+            */
             FunctionType &operator=(FunctionType &&a) = default;
 
             // Users can execute the function.
+            /** Calculate the plural expression.
+                \param [in] n The value relating to the translating text.
+                \return The plural index.
+            */
             PluralParser::NumT operator()(PluralParser::NumT n) const;
 
         private:

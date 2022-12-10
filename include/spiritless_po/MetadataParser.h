@@ -1,9 +1,12 @@
-/* MetadataParser.h
-
-Copyright © 2019 OOTA, Masato
-
-This program is distributed under the Boost Software License Version 1.0.
-You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+/** Metadata parser.
+    \file MetadataParser.h
+    \author OOTA, Masato
+    \copyright Copyright © 2019, 2022 OOTA, Masato
+    \par License Boost
+    \parblock
+      This program is distributed under the Boost Software License Version 1.0.
+      You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+    \endparblock
 */
 
 #ifndef SRIRITLESS_PO_METADATA_PARSER_H_
@@ -14,8 +17,16 @@ You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 
 namespace spiritless_po {
     namespace MetadataParser {
+        /** The type of the metadata.
+
+            map[key] == value
+        */
         typedef std::unordered_map<std::string, std::string> MapT;
 
+        /** Parse a metadata.
+            \param [in] metadataString The source text of the metadata.
+            \return The map of the metadata.
+        */
         inline MapT Parse(const std::string &metadataString)
         {
             MapT map;

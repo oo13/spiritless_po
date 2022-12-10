@@ -1,9 +1,12 @@
-/* PoParer.h
-
-Copyright © 2019 OOTA, Masato
-
-This program is distributed under the Boost Software License Version 1.0.
-You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+/** PO text parser.
+    \file PoParser.h
+    \author OOTA, Masato
+    \copyright Copyright © 2019, 2022 OOTA, Masato
+    \par License Boost
+    \parblock
+      This program is distributed under the Boost Software License Version 1.0.
+      You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+    \endparblock
 */
 
 #ifndef SRIRITLESS_PO_PO_PARSER_H_
@@ -18,19 +21,27 @@ You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 #include <vector>
 
 namespace spiritless_po {
+    /** This class is a parser for the text that contains the PO entries. */
     class PoParser {
     public:
-        // Type of PO entry.
-        // msgid and msgstr is undefined when error is not empty.
-        // msgstr.size() > 0 when error is empty.
-        // msgstr[0] is an empty string if the entry is fuzzy.
+        /** Type of a PO entry.
+
+            - msgid and msgstr are uncertain when error is not empty.
+            - msgstr.size() > 0 when error is empty.
+            - msgstr[0] is an empty string if the entry is fuzzy.
+        */
         struct PoEntryT {
-            std::string msgid;
-            std::vector<std::string> msgstr;
-            std::string error;
+            std::string msgid; /**< msgid or msgid_plural ( + CONTEXT_SEPARATOR + msgctxt if msgctxt exists.) */
+            std::vector<std::string> msgstr; /**< msgstr, or msgstr[n] if the entry is for msgid_plural. */
+            std::string error; /**< The messages that describe the error in the parsing. */
         };
 
-        // Parse all PO entries.
+        /** Parse the text that contains the PO entries.
+            \tparam INP A type of an input iterator.
+            \param [in] begin The beginning of the text to parse.
+            \param [in] end The end of the text to parse.
+            \return The result of the parsing.
+        */
         template <class INP>
         static std::vector<PoEntryT> GetEntries(INP begin, INP end);
 

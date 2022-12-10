@@ -1,9 +1,12 @@
-/* spiritless_po.h
-
-Copyright © 2019 OOTA, Masato
-
-This program is distributed under the Boost Software License Version 1.0.
-You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+/** Spiritless_po include file.
+    \file spiritless_po.h
+    \author OOTA, Masato
+    \copyright Copyright © 2019, 2022 OOTA, Masato
+    \par License Boost
+    \parblock
+      This program is distributed under the Boost Software License Version 1.0.
+      You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
+    \endparblock
 */
 
 #ifndef SRIRITLESS_PO_H_

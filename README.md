@@ -1,10 +1,18 @@
 # spiritless_po
 
-**spiritless_po** is a kind of gettext library in C++11 and inspired by [spirit-po](https://github.com/cbeck88/spirit-po).
+spiritless_po is a kind of gettext library in C++11 and inspired by [spirit-po](https://github.com/cbeck88/spirit-po), but I don't intend to be compatible with spirit-po.
 
-The only feature of this library is that it does not depend on Boost library.
+spirit-po depend on Boost library, but this library can be compiled by C++11.
 
-I don't intend to be compatible with spirit-po.
+Spiritless_po has some features (as same as spirit-po):
+- A catalog handles only one textdomain and only one language, doesn't handle multiple textdomains and multiple languages.
+- The catalog can read the messages from multiple PO files, instead of a single MO file. You can add new messages to a single catalog any number of times.
+- The catalog doesn't care the locale.
+- The catalog doesn't handle the character encoding.
+
+If you would use multiple textdomains and/or multiple languages, you need to use multiple catalogs.
+
+You need only to use [Catalog](@ref spiritless_po::Catalog) class and not to use other classes directly. The "public" interfaces that Catalog doesn't publish by even indirect are considered as the internal interfaces in the spiritless_po module.
 
 Example:
 ```c++
@@ -44,6 +52,15 @@ int main(int argc, char *argv[])
     cout << "Number of msgid: " << index.size() << endl;
     return 0;
 }
+```
+
+# To Generate the Documents
+Use doxygen. I tested the generation in doxygen 1.9.4.
+
+```
+% cd spiritless_po
+% doxygen spiritless_po.doxygen
+# Open prec_ctrl/html/index.html with your HTML browser.
 ```
 
 # Unit Test
