@@ -115,7 +115,7 @@ namespace spiritless_po {
     bool Catalog::Add(const INP begin, const INP end)
     {
         std::vector<PoParser::PoEntryT> newEntries(PoParser::GetEntries(begin, end));
-        for (const auto &it : newEntries) {
+        for (auto &it : newEntries) {
             if (!it.error.empty()) {
                 errors.push_back(std::move(it.error));
             } else if (!it.msgstr[0].empty()) {
@@ -124,7 +124,7 @@ namespace spiritless_po {
                         IndexDataT idx;
                         idx.stringTableIndex = stringTable.size();
                         idx.totalPlurals = it.msgstr.size();
-                        stringTable.insert(stringTable.end(), it.msgstr.begin(), it.msgstr.end());
+                        stringTable.insert(stringTable.end(), std::make_move_iterator(it.msgstr.begin()), std::make_move_iterator(it.msgstr.end()));
                         index.emplace(it.msgid, idx);
                     }
                 } else if (metadata.empty()) {
