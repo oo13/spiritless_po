@@ -114,7 +114,7 @@ namespace spiritless_po {
     template <class INP>
     bool Catalog::Add(const INP begin, const INP end)
     {
-        std::vector<CatalogEntryT> newEntries(PoParser::GetEntries(begin, end));
+        std::vector<PoParser::PoEntryT> newEntries(PoParser::GetEntries(begin, end));
         for (const auto &it : newEntries) {
             if (!it.error.empty()) {
                 errors.push_back(std::move(it.error));

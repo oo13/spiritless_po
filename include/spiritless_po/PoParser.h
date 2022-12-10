@@ -20,9 +20,19 @@ You can get the license file at “https://www.boost.org/LICENSE_1_0.txt”.
 namespace spiritless_po {
     class PoParser {
     public:
-        // Parse all catalog entries.
+        // Type of PO entry.
+        // msgid and msgstr is undefined when error is not empty.
+        // msgstr.size() > 0 when error is empty.
+        // msgstr[0] is an empty string if the entry is fuzzy.
+        struct PoEntryT {
+            std::string msgid;
+            std::vector<std::string> msgstr;
+            std::string error;
+        };
+
+        // Parse all PO entries.
         template <class INP>
-        static std::vector<CatalogEntryT> GetEntries(INP begin, INP end);
+        static std::vector<PoEntryT> GetEntries(INP begin, INP end);
 
     private:
         // Reading position type.
@@ -115,7 +125,7 @@ namespace spiritless_po {
         template <class INP>
         static std::pair<std::size_t, std::string> ParseMsgstrPlural(PositionT<INP> &it);
         template <class INP>
-        static CatalogEntryT ParseOneEntry(PositionT<INP> &it, LineT &previousLine);
+        static PoEntryT ParseOneEntry(PositionT<INP> &it, LineT &previousLine);
     };
 
 
@@ -483,17 +493,17 @@ namespace spiritless_po {
         return std::make_pair(idx, s);
     }
 
-    // Parse one catalog entry.
+    // Parse one PO entry.
     // Pre position: The result of DecisionTypeOfLine() for the first line.
     // Post position: The result of DecisionTypeOfLine() for next entry.
     // Return: previousLine: The line of a type for the next line.
-    // Return: one catalog entry data. it's empty if previousLine == END.
+    // Return: one PO entry data. it's empty if previousLine == END.
     // Note: previousLine must be LineT::START if there is no previous lines.
     template <class INP>
-    CatalogEntryT PoParser::ParseOneEntry(PositionT<INP> &it, LineT &previousLine)
+    PoParser::PoEntryT PoParser::ParseOneEntry(PositionT<INP> &it, LineT &previousLine)
     {
         LineT stat = previousLine;
-        CatalogEntryT out;
+        PoEntryT out;
         try {
             FlagT flag = NONE;
             if (stat == LineT::START) {
@@ -565,15 +575,15 @@ namespace spiritless_po {
         return out;
     }
 
-    // Parse all catalog entries.
+    // Parse all PO entries.
     template <class INP>
-    std::vector<CatalogEntryT> PoParser::GetEntries(const INP begin, const INP end)
+    std::vector<PoParser::PoEntryT> PoParser::GetEntries(const INP begin, const INP end)
     {
-        std::vector<CatalogEntryT> entries;
+        std::vector<PoEntryT> entries;
         PositionT<INP> pos(begin, end);
         LineT typeOfLine = LineT::START;
         while (pos.IsNotEnd()) {
-            const CatalogEntryT value = ParseOneEntry(pos, typeOfLine);
+            const PoEntryT value = ParseOneEntry(pos, typeOfLine);
             if (typeOfLine == LineT::END) {
                 break;
             }
