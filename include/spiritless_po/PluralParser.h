@@ -105,7 +105,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             */
             FunctionType(FunctionType &&a) = default;
 
-            /** This class is descructible. */
+            /** This class is destructible. */
             ~FunctionType() = default;
 
             /** This class is assignable.
@@ -178,7 +178,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         void DebugPrintCode() const;
 
 
-        /* for interpriter */
+        /* for interpreter */
         enum : Opcode {
             NUM,
             NUM32,
@@ -807,7 +807,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         const size_t endif_index = code.size();
         size_t if_length = else_adrs_index - if_adrs_index;
         const size_t else_length = endif_index - else_adrs_index - 1;
-        // Pratically, the relative address is always 8 bit.
+        // Practically, the relative address is always 8 bit.
 
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
         const bool else_length_is_32bit = true;
@@ -843,7 +843,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     {
 #ifndef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
         if (n <= 0xFF) {
-            // Pratically, the immediate number is always 8 bit.
+            // Practically, the immediate number is always 8 bit.
             PushOpcode(NUM, it);
             code.push_back(n);
             return;
@@ -1088,7 +1088,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                     PushImmediateNumber(v, it);
                     return;
                 } catch (ExpressionError &e) {
-                    // fall throuth
+                    // fall through
                 }
             }
         }

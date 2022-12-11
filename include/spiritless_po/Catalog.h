@@ -68,7 +68,7 @@ namespace spiritless_po {
         */
         Catalog(Catalog &&a) = default;
 
-        /** This class is descructible. */
+        /** This class is destructible. */
         ~Catalog() = default;
 
         /** This class is assignable.
@@ -247,7 +247,7 @@ namespace spiritless_po {
                         } catch (PluralParser::ExpressionError &e) {
                             const size_t col = std::distance(pluralText.cbegin(), e.Where());
                             errors.emplace_back("Column#" + std::to_string(col + 1)
-                                + " in plural expressoin: " + e.what());
+                                + " in plural expression: " + e.what());
                         }
                     }
                 }
