@@ -45,6 +45,14 @@ namespace spiritless_po {
         /** Create an empty catalog. */
         Catalog();
 
+        /** Create and Add(begin, end).
+            \tparam INP A type of an input iterator.
+            \param [in] begin An input iterator pointing to the beginning of the range.
+            \param [in] end An input iterator pointing to the end of the range.
+        */
+        template <class INP>
+        explicit Catalog(INP begin, INP end);
+
         /** Create and Add(is).
             \param [in] is An input stream that contains PO entries.
         */
@@ -190,6 +198,13 @@ namespace spiritless_po {
         : metadata(), index(), stringTable(), pluralFunction(),
           maxPlurals(0), errors()
     {
+    }
+
+    template <class INP>
+    inline Catalog::Catalog(const INP begin, const INP end)
+        : Catalog()
+    {
+        Add(begin, end);
     }
 
     inline Catalog::Catalog(std::istream &is)
