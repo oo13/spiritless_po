@@ -23,9 +23,15 @@ namespace spiritless_po {
         */
         typedef std::unordered_map<std::string, std::string> MapT;
 
-        /** Parse a metadata.
+        /** Parse a metadata text.
             \param [in] metadataString The source text of the metadata.
             \return The map of the metadata.
+
+            This function parses a metadata text and set the keys and the values to the map.
+
+            The metadata text consists of the lines that have a key and a value, such as "key: value\n", more exactly it can be expressed the regex "^(.+): *(.+)\n?$" (key = $1, value = $2), of course, '\\n' is necessary except for the last line. It's compatible with po_header_field() in GNU libgettextpo.
+
+            If some lines have the same keys, the first line is registered.
         */
         inline MapT Parse(const std::string &metadataString)
         {
@@ -44,8 +50,10 @@ namespace spiritless_po {
                     stat = VALUE;
                     if (c == '\n') {
                         stat = KEY;
-                        map.emplace(key, value);
-                        key.clear();
+                        if (!key.empty()) {
+                            map.emplace(key, value);
+                            key.clear();
+                        }
                         value.clear();
                     } else {
                         value += c;
