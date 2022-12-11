@@ -347,7 +347,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                                                     size_t max_data_size)
         : compiled_func(nullptr),
           code(program),
-          data(max_data_size + 1) // + 1 allow to check the index after accessing it.
+          data(max_data_size)
     {
         // We can read an item at the current position + 4 without checking.
         code.push_back(END);
@@ -393,71 +393,71 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             case NUM:
                 ++i;
                 ++top;
-                data[top] = code[i];
+                data.at(top) = code[i];
                 break;
             case NUM32:
                 ++top;
                 ++i;
-                data[top] = Read32(i);
+                data.at(top) = Read32(i);
                 break;
             case NOT:
-                data[top] = !data[top];
+                data[top] = !data.at(top);
                 break;
             case MULT:
-                data[top - 1] *= data[top];
+                data.at(top - 1) *= data.at(top);
                 --top;
                 break;
             case DIV:
-                data[top-1] /= data[top];
+                data.at(top-1) /= data.at(top);
                 --top;
                 break;
             case MOD:
-                data[top-1] %= data[top];
+                data.at(top-1) %= data.at(top);
                 --top;
                 break;
             case ADD:
-                data[top-1] += data[top];
+                data.at(top-1) += data.at(top);
                 --top;
                 break;
             case SUB:
-                data[top-1] -= data[top];
+                data.at(top-1) -= data.at(top);
                 --top;
                 break;
             case LE:
-                data[top-1] = data[top-1] <= data[top];
+                data[top-1] = data.at(top-1) <= data.at(top);
                 --top;
                 break;
             case LT:
-                data[top-1] = data[top-1] < data[top];
+                data[top-1] = data.at(top-1) < data.at(top);
                 --top;
                 break;
             case GT:
-                data[top-1] = data[top-1] > data[top];
+                data[top-1] = data.at(top-1) > data.at(top);
                 --top;
                 break;
             case GE:
-                data[top-1] = data[top-1] >= data[top];
+                data[top-1] = data.at(top-1) >= data.at(top);
                 --top;
                 break;
             case EQ:
-                data[top-1] = data[top-1] == data[top];
+                data[top-1] = data.at(top-1) == data.at(top);
                 --top;
                 break;
             case NE:
-                data[top-1] = data[top-1] != data[top];
+                data[top-1] = data.at(top-1) != data.at(top);
                 --top;
                 break;
             case AND:
-                data[top-1] = data[top-1] && data[top];
+                data[top-1] = data.at(top-1) && data.at(top);
                 --top;
                 break;
             case OR:
-                data[top-1] = data[top-1] || data[top];
+                data[top-1] = data.at(top-1) || data.at(top);
                 --top;
                 break;
             case IF:
                 ++i;
-                if (!data[top]) {
+                if (!data.at(top)) {
                     i += code[i];
                 }
                 --top;
@@ -466,7 +466,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                 {
                     ++i;
                     const NumT r = Read32(i);
-                    if (!data[top]) {
+                    if (!data.at(top)) {
                         i += r;
                     }
                     --top;
@@ -482,16 +482,16 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                 break;
             case VAR:
                 ++top;
-                data[top] = n;
+                data.at(top) = n;
                 break;
             default:
                 assert(false);
             }
             assert(i < code.size());
-            assert(top >= 0);
+            assert(top == static_cast<size_t>(-1) || top < data.size());
         }
         assert(top == 0);
-        return data[0];
+        return data.at(0);
     }
 
 
