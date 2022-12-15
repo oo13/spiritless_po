@@ -126,7 +126,7 @@ namespace spiritless_po {
         template <class INP>
         static void ParseEmptyLine(PositionT<INP> &it);
         template <class INP>
-        static std::string ParseText(PositionT<INP> &it, std::string &s);
+        static void ParseText(PositionT<INP> &it, std::string &s);
         template <class INP>
         static PoParser::FlagT ParseFlagComment(PositionT<INP> &it);
         template <class INP>
@@ -370,7 +370,7 @@ namespace spiritless_po {
     // Pre position: The first double quotation mark.
     // Post position: The next line.
     template <class INP>
-    std::string PoParser::ParseText(PositionT<INP> &it, std::string &s)
+    void PoParser::ParseText(PositionT<INP> &it, std::string &s)
     {
         assert(it.Get() == '"');
         it.Next();
@@ -424,13 +424,13 @@ namespace spiritless_po {
                 if (it.Get() != '\n' && !it.IsEnd())
                     throw PoParseError<INP>("Unexpected character is found.", it);
                 it.Next();
-                return s;
+                return;
             } else {
                 s += c;
             }
         }
         assert(0);
-        return s;
+        return;
     }
 
     // Pick out a flag of the line.
@@ -595,7 +595,7 @@ namespace spiritless_po {
         PositionT<INP> pos(begin, end);
         LineT typeOfLine = LineT::START;
         while (pos.IsNotEnd()) {
-            const PoEntryT value = ParseOneEntry(pos, typeOfLine);
+            PoEntryT value = ParseOneEntry(pos, typeOfLine);
             if (typeOfLine == LineT::END) {
                 break;
             }
