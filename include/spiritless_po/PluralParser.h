@@ -21,10 +21,10 @@
 #include <map>
 #include <vector>
 
-#if (defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE) || defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER_COMPILE)) && !defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER)
-#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER
+#if (defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT_EXECUTE) || defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT_COMPILE)) && !defined(SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT)
+#define SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT
 #endif
-#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT
 #include <iostream>
 #endif
 
@@ -220,7 +220,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
 
 
 
-#ifndef SPIRITLESS_PO_DEBUG_PLURAL_PARSER
+#ifndef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT
     inline void PluralParser::DebugPrintOpcode(Opcode op)
     {
     }
@@ -334,7 +334,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     {
         DebugPrintCode(code);
     }
-#endif // SPIRITLESS_PO_DEBUG_PLURAL_PARSER
+#endif // SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT
 
 
 
@@ -379,12 +379,12 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             return compiled_func(n);
         }
 
-#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT_EXECUTE
         PluralParser::DebugPrintCode(code);
 #endif
         size_t top = -1;
         for (size_t i = 0; i < code.size() && code[i] != END; ++i) {
-#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_EXECUTE
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT_EXECUTE
             std::cout << i << ": ";
             DebugPrintOpcode(code[i]);
             std::cout << std::endl;
@@ -576,7 +576,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         return std::make_pair(find_pos, curIt);
     }
 
-#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_INTERPRETER
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_USE_INTERPRETER
     inline PluralParser::FunctionType PluralParser::CreatePluralFunction()
     {
         return FunctionType(code, max_data_size);
@@ -704,7 +704,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         PluralParser result;
         result.ParseTerm7(it, end);
         SkipSpaces(it, end);
-#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_COMPILE
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT_COMPILE
         DebugPrintCode(result.code);
 #endif
         if (it == end) {
@@ -809,7 +809,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         const size_t else_length = endif_index - else_adrs_index - 1;
         // Practically, the relative address is always 8 bit.
 
-#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_ELSE
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_USE_32BIT_ELSE
         const bool else_length_is_32bit = true;
 #else
         const bool else_length_is_32bit = else_length > 0xFF;
@@ -818,7 +818,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             // if_length includes ELSE command and ELSE will replace ELSE32.
             if_length += 3;
         }
-#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IF
+#ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_USE_32BIT_IF
         const bool if_length_is_32bit = true;
 #else
         const bool if_length_is_32bit = if_length > 0xFF;
@@ -841,7 +841,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     // Push an immediate number into code.
     inline void PluralParser::PushImmediateNumber(const NumT n, const InP it)
     {
-#ifndef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_32BIT_IMMEDIATE_NUMBER
+#ifndef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_USE_32BIT_NUMBER
         if (n <= 0xFF) {
             // Practically, the immediate number is always 8 bit.
             PushOpcode(NUM, it);
