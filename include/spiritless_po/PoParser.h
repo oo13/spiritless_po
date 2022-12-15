@@ -126,7 +126,7 @@ namespace spiritless_po {
         template <class INP>
         static void ParseEmptyLine(PositionT<INP> &it);
         template <class INP>
-        static std::string ParseText(PositionT<INP> &it);
+        static std::string ParseText(PositionT<INP> &it, std::string &s);
         template <class INP>
         static PoParser::FlagT ParseFlagComment(PositionT<INP> &it);
         template <class INP>
@@ -370,11 +370,10 @@ namespace spiritless_po {
     // Pre position: The first double quotation mark.
     // Post position: The next line.
     template <class INP>
-    std::string PoParser::ParseText(PositionT<INP> &it)
+    std::string PoParser::ParseText(PositionT<INP> &it, std::string &s)
     {
         assert(it.Get() == '"');
         it.Next();
-        std::string s;
         for (;;) {
             const char c = it.Get();
             it.Next();
@@ -476,9 +475,10 @@ namespace spiritless_po {
     std::string PoParser::ParseMsgdata(PositionT<INP> &it)
     {
         SkipSpacesExceptNL(it);
-        std::string s(ParseText(it));
+        std::string s;
+        ParseText(it, s);
         while (IsTextLine(it)) {
-            s += ParseText(it);
+            ParseText(it, s);
         }
         return s;
     }
@@ -497,9 +497,10 @@ namespace spiritless_po {
         }
         it.Next();
         SkipSpacesExceptNL(it);
-        std::string s(ParseText(it));
+        std::string s;
+        ParseText(it, s);
         while (IsTextLine(it)) {
-            s += ParseText(it);
+            ParseText(it, s);
         }
         return std::make_pair(idx, s);
     }
