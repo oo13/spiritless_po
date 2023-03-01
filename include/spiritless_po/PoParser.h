@@ -9,8 +9,8 @@
     \endparblock
 */
 
-#ifndef SRIRITLESS_PO_PO_PARSER_H_
-#define SRIRITLESS_PO_PO_PARSER_H_
+#ifndef SPIRITLESS_PO_PO_PARSER_H_
+#define SPIRITLESS_PO_PO_PARSER_H_
 
 #include "Common.h"
 
@@ -605,4 +605,4 @@ namespace spiritless_po {
     }
 } // namespace spiritless_po
 
-#endif // SRIRITLESS_PO_PO_PARSER_H_
+#endif // SPIRITLESS_PO_PO_PARSER_H_

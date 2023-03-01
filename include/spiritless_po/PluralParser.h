@@ -9,8 +9,8 @@
     \endparblock
 */
 
-#ifndef SRIRITLESS_PO_PLURAL_PARSER_H_
-#define SRIRITLESS_PO_PLURAL_PARSER_H_
+#ifndef SPIRITLESS_PO_PLURAL_PARSER_H_
+#define SPIRITLESS_PO_PLURAL_PARSER_H_
 
 #include <algorithm>
 #include <cassert>
@@ -1100,4 +1100,4 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
 #endif
 } // namespace spiritless_po
 
-#endif // SRIRITLESS_PO_PLURAL_PARSER_H_
+#endif // SPIRITLESS_PO_PLURAL_PARSER_H_
