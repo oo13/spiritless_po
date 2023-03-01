@@ -1,4 +1,4 @@
-# spiritless_po
+# spiritless_po ![badge](https://github.com/oo13/spiritless_po/workflows/ci-workflow/badge.svg)
 
 spiritless_po is a kind of gettext library in C++11 and inspired by [spirit-po](https://github.com/cbeck88/spirit-po), but I don't intend to be compatible with spirit-po.
 
