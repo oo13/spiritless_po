@@ -429,8 +429,6 @@ namespace spiritless_po {
                 s += c;
             }
         }
-        assert(0);
-        return;
     }
 
     // Pick out a flag of the line.
