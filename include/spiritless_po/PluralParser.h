@@ -130,7 +130,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             // program and max_data_size must be bug-free.
             FunctionType(const std::vector<PluralParser::Opcode> &program,
                          size_t max_data_size);
-            FunctionType(CompiledPluralFunctionT func);
+            explicit FunctionType(CompiledPluralFunctionT func);
 
             NumT Read32(size_t &i) const;
 

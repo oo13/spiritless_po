@@ -377,8 +377,8 @@ namespace spiritless_po {
         for (;;) {
             const char c = it.Get();
             it.Next();
-            std::size_t val = 0;
             if (c == '\\') {
+                std::size_t val = 0;
                 const char c2 = it.Get();
                 it.Next();
                 switch (c2) {
