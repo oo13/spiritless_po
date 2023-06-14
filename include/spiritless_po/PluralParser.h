@@ -779,7 +779,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     inline void PluralParser::InsertAddress32(size_t adrs_index, size_t jump_length)
     {
         code.resize(code.size() + 3);
-        std::copy(code.begin() + adrs_index + 1, code.end(),
+        std::copy(code.begin() + adrs_index + 1, code.end() - 3,
                   code.begin() + adrs_index + 4);
         code[adrs_index + 0] = (jump_length >> 24) & 0xFF;
         code[adrs_index + 1] = (jump_length >> 16) & 0xFF;
