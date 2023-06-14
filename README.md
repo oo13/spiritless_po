@@ -67,8 +67,9 @@ Use doxygen. I tested the generation in doxygen 1.9.4.
 This library includes some unit test codes. If you want to run it, the following programs are needed:
 
 - Catch2 (Tested in version 2.13.10)
-- cmake  (Tested in Version 3.24.3)
+- cmake  (Tested in Version 3.24.3) or meson (Tested in Version 1.0.1)
 
+cmake:
 ```
 % cd spiritless_po/test
 % cmake -DCMAKE_BUILD_TYPE=Release -B build .
@@ -76,4 +77,14 @@ This library includes some unit test codes. If you want to run it, the following
 % make
 % ./test_spiritless_po
 % ./test_spiritless_po '[!benchmark]' ; # For benchmark
+```
+
+meson:
+```
+% cd spiritless_po/test
+% meson setup build
+% cd build
+% meson compile
+% meson test ; # or ninja test
+% meson test --benchmark ; # or ninja benchmark
 ```
