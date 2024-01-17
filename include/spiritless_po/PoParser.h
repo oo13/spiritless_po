@@ -421,8 +421,9 @@ namespace spiritless_po {
                 }
             } else if (c == '"') {
                 SkipSpacesExceptNL(it);
-                if (it.Get() != '\n' && !it.IsEnd())
+                if (it.Get() != '\n' && !it.IsEnd()) {
                     throw PoParseError<INP>("Unexpected character is found.", it);
+                }
                 it.Next();
                 return;
             } else {
@@ -552,8 +553,9 @@ namespace spiritless_po {
                     if (stat == LineT::MSGSTR_PLURAL) {
                         const auto saveIt = it;
                         const auto p = ParseMsgstrPlural(it);
-                        if (p.first != out.msgstr.size())
+                        if (p.first != out.msgstr.size()) {
                             throw PoParseError<INP>("Invalid plural index in msgstr[n].", saveIt);
+                        }
                         out.msgstr.push_back(p.second);
                     } else {
                         break;

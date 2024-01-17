@@ -241,8 +241,9 @@ namespace spiritless_po {
                         const auto pluralText = plural->second;
                         try {
                             const auto pluralData = PluralParser::Parse(pluralText);
-                            if (pluralData.first > 0)
+                            if (pluralData.first > 0) {
                                 maxPlurals = pluralData.first - 1;
+                            }
                             pluralFunction = pluralData.second;
                         } catch (PluralParser::ExpressionError &e) {
                             const size_t col = std::distance(pluralText.cbegin(), e.Where());
@@ -347,8 +348,9 @@ namespace spiritless_po {
         const auto &it = index.find(s);
         if (it != index.end()) {
             std::size_t nIdx = pluralFunction(n);
-            if (nIdx >= it->second.totalPlurals)
+            if (nIdx >= it->second.totalPlurals) {
                 nIdx = 0;
+            }
             return stringTable[it->second.stringTableIndex + nIdx];
         } else {
             if (n == 1) {
