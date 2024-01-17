@@ -28,7 +28,7 @@
 #include <vector>
 
 namespace spiritless_po {
-    /** Class Catalog handles a catalog that contains some original and translated messages.
+    /** Class Catalog handles a catalog that contains original and translated messages, which come from PO format streams.
 
         You need only to use this class and not directly to use other classes under include/spiritless_po/.
 
@@ -153,8 +153,8 @@ namespace spiritless_po {
 
         /** Type of the string index.
 
-            - stringTable[indexData[msgctxt + msgid].stringTableIndex] == msgstr
-            - stringTable[indexData[msgctxt + msgid].stringTableIndex + n] == msgstr[n]
+            - stringTable[indexData[msgctxt + CONTEXT_SEPARATOR + msgid].stringTableIndex] == msgstr
+            - stringTable[indexData[msgctxt + CONTEXT_SEPARATOR + msgid].stringTableIndex + n] == msgstr[n]
             - The maximum n is totalPlurals - 1.
             \attention This type is public to use for debugging and managing.
         */
