@@ -1,9 +1,9 @@
 /*
-  Copyright © 2022 OOTA, Masato
+  Copyright © 2022, 2024 OOTA, Masato
   License: CC-BY-SA-3.0
   See https://creativecommons.org/licenses/by-sa/3.0/legalcode for license details.
 */
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <string>
 
 #include "spiritless_po/MetadataParser.h"

@@ -66,8 +66,8 @@ Use doxygen. I tested the generation in doxygen 1.9.4.
 # Unit Test
 This library includes some unit test codes. If you want to run it, the following programs are needed:
 
-- Catch2 (Tested in version 2.13.10)
-- cmake  (Tested in Version 3.24.3) or meson (Tested in Version 1.0.1)
+- Catch2 v3 (Tested in version 3.4.0)
+- cmake  (Tested in Version 3.28.1) or meson (Tested in Version 1.2.3)
 
 cmake:
 ```
@@ -88,3 +88,5 @@ meson:
 % meson test ; # or ninja test
 % meson test --benchmark ; # or ninja benchmark
 ```
+
+Note that Catch2 v3 requires C++14, but the library can be compiled by C++11.
