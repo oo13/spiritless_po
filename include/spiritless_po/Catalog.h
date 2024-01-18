@@ -221,13 +221,13 @@ namespace spiritless_po {
          */
         const std::vector<std::string> &GetStringTable() const noexcept;
 
-        /** Get the statistics of the messages added by Add().
+        /** Get the statistics of the messages added by Add() and Merge().
             \return The statistics.
             \attention This function is public to use for debugging and managing.
          */
         const StatisticsT &GetStatistics() const noexcept;
 
-        /** Clear the statistics of the messages added by Add().
+        /** Clear the statistics of the messages added by Add() and Merge().
             \attention This function is public to use for debugging and managing.
          */
         void ClearStatistics() noexcept;
