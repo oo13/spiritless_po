@@ -1,7 +1,7 @@
 /** class Catalog
     \file Catalog.h
     \author OOTA, Masato
-    \copyright Copyright © 2019, 2022 OOTA, Masato
+    \copyright Copyright © 2019, 2022, 2024 OOTA, Masato
     \par License Boost
     \parblock
       This program is distributed under the Boost Software License Version 1.0.
@@ -163,6 +163,33 @@ namespace spiritless_po {
             std::size_t totalPlurals; /**< The number of the strings, including the plural forms, corresponding a msgid. */
         };
 
+        /** Type of the statistics.
+
+            The statistics of the messages added by Add() and Merge().
+
+            For each entry added by Add() and Merge():
+            1. `totalCount`++
+            2. if msgstr[0] == "" then (* untranslated entry *) break
+            3. if ID == "" then `metadataCount`++; break
+            4. if msgstr[0] already exists in the catalog then `discardedCount`++; break
+            5. `translatedCount`++
+
+            "ID" means msgid, or msgctxt + CONTEXT_SEPARATOR + msgid if msgctxt != "".
+
+            Add(a normal PO file) is to report `metadataCount` == 1 and `discardedCount` == 0.
+
+            \note `totalCount` counts the empty ID, unlike "msgfmt --statistics".
+            \note Only first metadata is used when `metadataCount` is more than one.
+            \note `discardedCount` doesn't count the discarded metadata.
+            \attention Merge() report no untranslated entry, because the catalog doesn't keep the untranslated entry.
+        */
+        struct StatisticsT {
+            std::size_t totalCount; /**< The count of the entry. */
+            std::size_t metadataCount; /**< The count of the metadata entry. */
+            std::size_t translatedCount; /**< The count of the translated entry. */
+            std::size_t discardedCount; /**< The count of the discarded entry. */
+        };
+
     private:
         MetadataParser::MapT metadata;
         std::unordered_map<std::string, IndexDataT> index;
@@ -170,6 +197,7 @@ namespace spiritless_po {
         PluralParser::FunctionType pluralFunction;
         std::size_t maxPlurals;
         std::vector<std::string> errors;
+        StatisticsT statistics;
 
     public:
         // Debugging and managing functions
@@ -192,12 +220,24 @@ namespace spiritless_po {
             \attention This function is public to use for debugging and managing.
          */
         const std::vector<std::string> &GetStringTable() const noexcept;
+
+        /** Get the statistics of the messages added by Add().
+            \return The statistics.
+            \attention This function is public to use for debugging and managing.
+         */
+        const StatisticsT &GetStatistics() const noexcept;
+
+        /** Clear the statistics of the messages added by Add().
+            \attention This function is public to use for debugging and managing.
+         */
+        void ClearStatistics() noexcept;
     };
 
     inline Catalog::Catalog() noexcept
         : metadata(), index(), stringTable(), pluralFunction(),
           maxPlurals(0), errors()
     {
+        ClearStatistics();
     }
 
     template <class INP>
@@ -222,33 +262,40 @@ namespace spiritless_po {
     bool Catalog::Add(const INP begin, const INP end)
     {
         std::vector<PoParser::PoEntryT> newEntries(PoParser::GetEntries(begin, end));
+        statistics.totalCount += newEntries.size();
         for (auto &it : newEntries) {
             if (!it.error.empty()) {
                 errors.push_back(std::move(it.error));
             } else if (!it.msgstr[0].empty()) {
                 if (!it.msgid.empty()) {
                     if (index.find(it.msgid) == index.end()) {
+                        statistics.translatedCount++;
                         IndexDataT idx;
                         idx.stringTableIndex = stringTable.size();
                         idx.totalPlurals = it.msgstr.size();
                         stringTable.insert(stringTable.end(), std::make_move_iterator(it.msgstr.begin()), std::make_move_iterator(it.msgstr.end()));
                         index.emplace(it.msgid, idx);
+                    } else {
+                        statistics.discardedCount++;
                     }
-                } else if (metadata.empty()) {
-                    metadata = MetadataParser::Parse(it.msgstr[0]);
-                    const auto plural = metadata.find("Plural-Forms");
-                    if (plural != metadata.end()) {
-                        const auto pluralText = plural->second;
-                        try {
-                            const auto pluralData = PluralParser::Parse(pluralText);
-                            if (pluralData.first > 0) {
-                                maxPlurals = pluralData.first - 1;
+                } else {
+                    statistics.metadataCount++;
+                    if (metadata.empty()) {
+                        metadata = MetadataParser::Parse(it.msgstr[0]);
+                        const auto plural = metadata.find("Plural-Forms");
+                        if (plural != metadata.end()) {
+                            const auto pluralText = plural->second;
+                            try {
+                                const auto pluralData = PluralParser::Parse(pluralText);
+                                if (pluralData.first > 0) {
+                                    maxPlurals = pluralData.first - 1;
+                                }
+                                pluralFunction = pluralData.second;
+                            } catch (PluralParser::ExpressionError &e) {
+                                const size_t col = std::distance(pluralText.cbegin(), e.Where());
+                                errors.emplace_back("Column#" + std::to_string(col + 1)
+                                    + " in plural expression: " + e.what());
                             }
-                            pluralFunction = pluralData.second;
-                        } catch (PluralParser::ExpressionError &e) {
-                            const size_t col = std::distance(pluralText.cbegin(), e.Where());
-                            errors.emplace_back("Column#" + std::to_string(col + 1)
-                                + " in plural expression: " + e.what());
                         }
                     }
                 }
@@ -266,13 +313,19 @@ namespace spiritless_po {
 
     inline void Catalog::Merge(const Catalog &a)
     {
-        if (metadata.empty()) {
-            metadata = a.metadata;
-            maxPlurals = a.maxPlurals;
-            pluralFunction = a.pluralFunction;
+        if (!a.metadata.empty()) {
+            statistics.metadataCount++;
+            statistics.totalCount++;
+            if (metadata.empty()) {
+                metadata = a.metadata;
+                maxPlurals = a.maxPlurals;
+                pluralFunction = a.pluralFunction;
+            }
         }
+        statistics.totalCount += a.index.size();
         for (const auto &src : a.index) {
             if (index.find(src.first) == index.end()) {
+                statistics.translatedCount++;
                 auto srcIndexData = src.second;
                 auto srcIndex = srcIndexData.stringTableIndex;
                 auto srcTotal = srcIndexData.totalPlurals;
@@ -282,6 +335,8 @@ namespace spiritless_po {
                 idx.totalPlurals = srcTotal;
                 stringTable.insert(stringTable.end(), srcStringIt, srcStringIt + srcTotal);
                 index.emplace(src.first, idx);
+            } else {
+                statistics.discardedCount++;
             }
         }
         errors.insert(errors.end(), a.errors.begin(), a.errors.end());
@@ -374,6 +429,16 @@ namespace spiritless_po {
     inline const std::vector<std::string> &Catalog::GetStringTable() const noexcept
     {
         return stringTable;
+    }
+
+    inline const Catalog::StatisticsT &Catalog::GetStatistics() const noexcept
+    {
+        return statistics;
+    }
+
+    inline void Catalog::ClearStatistics() noexcept
+    {
+        statistics = Catalog::StatisticsT{};
     }
 } // namespace spiritless_po
 
