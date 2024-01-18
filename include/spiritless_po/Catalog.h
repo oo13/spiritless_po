@@ -171,7 +171,7 @@ namespace spiritless_po {
             1. `totalCount`++
             2. if msgstr[0] == "" then (* untranslated entry *) break
             3. if ID == "" then `metadataCount`++; break
-            4. if msgstr[0] already exists in the catalog then `discardedCount`++; break
+            4. if ID already exists in the catalog then `discardedCount`++; break
             5. `translatedCount`++
 
             "ID" means msgid, or msgctxt + CONTEXT_SEPARATOR + msgid if msgctxt != "".
@@ -223,12 +223,10 @@ namespace spiritless_po {
 
         /** Get the statistics of the messages added by Add() and Merge().
             \return The statistics.
-            \attention This function is public to use for debugging and managing.
          */
         const StatisticsT &GetStatistics() const noexcept;
 
         /** Clear the statistics of the messages added by Add() and Merge().
-            \attention This function is public to use for debugging and managing.
          */
         void ClearStatistics() noexcept;
     };
