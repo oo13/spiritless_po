@@ -181,7 +181,8 @@ namespace spiritless_po {
             \note `totalCount` counts the empty ID, unlike "msgfmt --statistics".
             \note Only first metadata is used when `metadataCount` is more than one.
             \note `discardedCount` doesn't count the discarded metadata.
-            \attention Merge() report no untranslated entry, because the catalog doesn't keep the untranslated entry.
+            \note The increment of `translatedCount` is equal to the increment of index.size().
+            \attention Merge() reports no untranslated entry, because the catalog doesn't keep the untranslated entry.
         */
         struct StatisticsT {
             std::size_t totalCount; /**< The count of the entry. */
@@ -261,13 +262,13 @@ namespace spiritless_po {
     {
         std::vector<PoParser::PoEntryT> newEntries(PoParser::GetEntries(begin, end));
         statistics.totalCount += newEntries.size();
+        const size_t prevIndexSize = index.size();
         for (auto &it : newEntries) {
             if (!it.error.empty()) {
                 errors.push_back(std::move(it.error));
             } else if (!it.msgstr[0].empty()) {
                 if (!it.msgid.empty()) {
                     if (index.find(it.msgid) == index.end()) {
-                        statistics.translatedCount++;
                         IndexDataT idx;
                         idx.stringTableIndex = stringTable.size();
                         idx.totalPlurals = it.msgstr.size();
@@ -299,6 +300,7 @@ namespace spiritless_po {
                 }
             }
         }
+        statistics.translatedCount += index.size() - prevIndexSize;
         return errors.empty();
     }
 
@@ -320,10 +322,11 @@ namespace spiritless_po {
                 pluralFunction = a.pluralFunction;
             }
         }
+
         statistics.totalCount += a.index.size();
+        const size_t prevIndexSize = index.size();
         for (const auto &src : a.index) {
             if (index.find(src.first) == index.end()) {
-                statistics.translatedCount++;
                 auto srcIndexData = src.second;
                 auto srcIndex = srcIndexData.stringTableIndex;
                 auto srcTotal = srcIndexData.totalPlurals;
@@ -337,6 +340,8 @@ namespace spiritless_po {
                 statistics.discardedCount++;
             }
         }
+        statistics.translatedCount += index.size() - prevIndexSize;
+
         errors.insert(errors.end(), a.errors.begin(), a.errors.end());
     }
 
