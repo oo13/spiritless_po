@@ -48,8 +48,12 @@ int main(int argc, char *argv[])
              << ": " << catalog.ngettext("Bean", "Beans", i) << endl;
     }
 
-    auto index = catalog.GetIndex();
-    cout << "Number of msgid: " << index.size() << endl;
+    cout << "Statistics:" << endl;
+    auto statistics = catalog.GetStatistics();
+    cout << "  Total msgid: " << statistics.totalCount << endl;
+    cout << "  Metadate: " << statistics.metadataCount << endl;
+    cout << "  Translated: " << statistics.translatedCount << endl;
+    cout << "  Discarded: " << statistics.discardedCount << endl;
     return 0;
 }
 ```
