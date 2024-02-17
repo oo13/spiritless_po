@@ -151,18 +151,6 @@ namespace spiritless_po {
             const std::string &msgidPlural, unsigned long int n) const;
 
 
-        /** Type of the string index.
-
-            - stringTable[indexData[msgctxt + CONTEXT_SEPARATOR + msgid].stringTableIndex] == msgstr
-            - stringTable[indexData[msgctxt + CONTEXT_SEPARATOR + msgid].stringTableIndex + n] == msgstr[n]
-            - The maximum n is totalPlurals - 1.
-            \attention This type is public to use for debugging and managing.
-        */
-        struct IndexDataT {
-            std::size_t stringTableIndex; /**< The index of the StringTable. */
-            std::size_t totalPlurals; /**< The number of the strings, including the plural forms, corresponding a msgid. */
-        };
-
         /** Type of the statistics.
 
             The statistics of the messages added by Add() and Merge().
@@ -189,6 +177,28 @@ namespace spiritless_po {
             std::size_t metadataCount; /**< The count of the metadata entry. */
             std::size_t translatedCount; /**< The count of the translated entry. */
             std::size_t discardedCount; /**< The count of the discarded entry. */
+        };
+
+        /** Get the statistics of the messages added by Add() and Merge().
+            \return The statistics.
+         */
+        const StatisticsT &GetStatistics() const noexcept;
+
+        /** Clear the statistics of the messages added by Add() and Merge().
+         */
+        void ClearStatistics() noexcept;
+
+
+        /** Type of the string index.
+
+            - stringTable[indexData[msgctxt + CONTEXT_SEPARATOR + msgid].stringTableIndex] == msgstr
+            - stringTable[indexData[msgctxt + CONTEXT_SEPARATOR + msgid].stringTableIndex + n] == msgstr[n]
+            - The maximum n is totalPlurals - 1.
+            \attention This type is public to use for debugging and managing.
+        */
+        struct IndexDataT {
+            std::size_t stringTableIndex; /**< The index of the StringTable. */
+            std::size_t totalPlurals; /**< The number of the strings, including the plural forms, corresponding a msgid. */
         };
 
     private:
@@ -221,15 +231,6 @@ namespace spiritless_po {
             \attention This function is public to use for debugging and managing.
          */
         const std::vector<std::string> &GetStringTable() const noexcept;
-
-        /** Get the statistics of the messages added by Add() and Merge().
-            \return The statistics.
-         */
-        const StatisticsT &GetStatistics() const noexcept;
-
-        /** Clear the statistics of the messages added by Add() and Merge().
-         */
-        void ClearStatistics() noexcept;
     };
 
     inline Catalog::Catalog()
@@ -419,6 +420,16 @@ namespace spiritless_po {
         }
     }
 
+    inline const Catalog::StatisticsT &Catalog::GetStatistics() const noexcept
+    {
+        return statistics;
+    }
+
+    inline void Catalog::ClearStatistics() noexcept
+    {
+        statistics = Catalog::StatisticsT{};
+    }
+
     inline const MetadataParser::MapT &Catalog::GetMetadata() const noexcept
     {
         return metadata;
@@ -432,16 +443,6 @@ namespace spiritless_po {
     inline const std::vector<std::string> &Catalog::GetStringTable() const noexcept
     {
         return stringTable;
-    }
-
-    inline const Catalog::StatisticsT &Catalog::GetStatistics() const noexcept
-    {
-        return statistics;
-    }
-
-    inline void Catalog::ClearStatistics() noexcept
-    {
-        statistics = Catalog::StatisticsT{};
     }
 } // namespace spiritless_po
 
