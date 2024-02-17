@@ -169,9 +169,9 @@ namespace spiritless_po {
 
             For each entry added by Add() and Merge():
             1. `totalCount`++
-            2. if msgstr[0] == "" then (* untranslated entry *) break
-            3. if ID == "" then `metadataCount`++; break
-            4. if ID already exists in the catalog then `discardedCount`++; break
+            2. if msgstr[0] == "" then (* untranslated entry *) continue
+            3. if ID == "" then `metadataCount`++; continue
+            4. if ID already exists in the catalog then `discardedCount`++; continue
             5. `translatedCount`++
 
             "ID" means msgid, or msgctxt + CONTEXT_SEPARATOR + msgid if msgctxt != "".
