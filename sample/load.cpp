@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     cout << "Statistics:" << endl;
     auto statistics = catalog.GetStatistics();
     cout << "  Total msgid: " << statistics.totalCount << endl;
-    cout << "  Metadate: " << statistics.metadataCount << endl;
+    cout << "  Metadata: " << statistics.metadataCount << endl;
     cout << "  Translated: " << statistics.translatedCount << endl;
     cout << "  Discarded: " << statistics.discardedCount << endl;
     return 0;
