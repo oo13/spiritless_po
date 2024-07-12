@@ -14,8 +14,8 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cctype>
 #include <iterator>
+#include <locale>
 #include <stdexcept>
 #include <string>
 #include <map>
@@ -533,7 +533,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     // Skip spaces (Utility function)
     inline void PluralParser::SkipSpaces(InP &it, const InP end)
     {
-        while (it != end && std::isspace(static_cast<unsigned char>(*it))) {
+        while (it != end && std::isspace(*it, std::locale::classic())) {
             ++it;
         }
     }
@@ -542,7 +542,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     inline PluralParser::NumT PluralParser::GetNumber(InP &it, const InP end)
     {
         std::string s;
-        while (it != end && std::isdigit(static_cast<unsigned char>(*it))) {
+        while (it != end && std::isdigit(*it, std::locale::classic())) {
             s += *it++;
         }
         if (!s.empty()) {

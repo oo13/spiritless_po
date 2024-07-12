@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <locale>
 #include <string>
 #include <utility>
 #include <vector>
@@ -222,7 +223,7 @@ namespace spiritless_po {
     {
         for (;;) {
             const char c = it.Get();
-            if (c != '\n' && std::isspace(static_cast<unsigned char>(c))) {
+            if (c != '\n' && std::isspace(c, std::locale::classic())) {
                 it.Next();
             } else {
                 break;
@@ -247,7 +248,7 @@ namespace spiritless_po {
         for (;;) {
             const char c = it.Get();
             // '-' is a valid character of flags.
-            if (std::isalpha(static_cast<unsigned char>(c)) || c == '_' || c == '-') {
+            if (std::isalpha(c, std::locale::classic()) || c == '_' || c == '-') {
                 s += c;
                 it.Next();
             } else {
@@ -264,7 +265,7 @@ namespace spiritless_po {
         std::string s;
         for (;;) {
             const char c = it.Get();
-            if (std::isdigit(static_cast<unsigned char>(c))) {
+            if (std::isdigit(c, std::locale::classic())) {
                 s += c;
                 it.Next();
             } else {
@@ -281,7 +282,7 @@ namespace spiritless_po {
         std::string s;
         for (;;) {
             const char c = it.Get();
-            if (std::isdigit(static_cast<unsigned char>(c)) && c != '8' && c != '9') {
+            if (std::isdigit(c, std::locale::classic()) && c != '8' && c != '9') {
                 s += c;
                 it.Next();
             } else {
@@ -298,7 +299,7 @@ namespace spiritless_po {
         std::string s;
         for (;;) {
             const char c = it.Get();
-            if (std::isxdigit(static_cast<unsigned char>(c))) {
+            if (std::isxdigit(c, std::locale::classic())) {
                 s += c;
                 it.Next();
             } else {
