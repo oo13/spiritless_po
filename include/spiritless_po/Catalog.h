@@ -47,11 +47,12 @@ namespace spiritless_po {
 
         /** Create and Add(begin, end).
             \tparam INP A type of an input iterator.
+            \tparam Sentinel A type of a sentinel.
             \param [in] begin An input iterator pointing to the beginning of the range.
-            \param [in] end An input iterator pointing to the end of the range.
+            \param [in] end A sentinel of the range.
         */
-        template <class INP>
-        explicit Catalog(INP begin, INP end);
+        template <typename INP, typename Sentinel>
+        explicit Catalog(INP &&begin, Sentinel &&end);
 
         /** Create and Add(is).
             \param [in] is An input stream that contains PO entries.
@@ -86,14 +87,15 @@ namespace spiritless_po {
 
         /** Add PO entries.
             \tparam INP A type of an input iterator.
+            \tparam Sentinel A type of a sentinel.
             \param [in] begin An input iterator pointing to the beginning of the range.
-            \param [in] end An input iterator pointing to the end of the range.
+            \param [in] end A sentinel of the range.
             \return true if no error is existed.
             \note This function doesn't change any existed entries, that is a translated text (msgstr) that corresponds to an existed original text (msgid), and also metadata if it's already existed.
             \note An entry isn't added if the msgstr (including msgstr[0]) is empty.
         */
-        template <class INP>
-        bool Add(INP begin, INP end);
+        template <typename INP, typename Sentinel>
+        bool Add(INP &&begin, Sentinel &&end);
 
         /** Add some PO entries.
             \param [in] is An input stream that contains PO entries.
@@ -240,8 +242,8 @@ namespace spiritless_po {
         ClearStatistics();
     }
 
-    template <class INP>
-    inline Catalog::Catalog(const INP begin, const INP end)
+    template <typename INP, typename Sentinel>
+    inline Catalog::Catalog(INP &&begin, Sentinel &&end)
         : Catalog()
     {
         Add(begin, end);
@@ -258,8 +260,8 @@ namespace spiritless_po {
         *this = Catalog();
     }
 
-    template <class INP>
-    bool Catalog::Add(const INP begin, const INP end)
+    template <typename INP, typename Sentinel>
+    bool Catalog::Add(INP &&begin, Sentinel &&end)
     {
         std::vector<PoParser::PoEntryT> newEntries(PoParser::GetEntries(begin, end));
         statistics.totalCount += newEntries.size();

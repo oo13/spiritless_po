@@ -597,3 +597,90 @@ TEST_CASE( "Metadata Statistics (Merge)", "[Catalog]" ) {
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 0 );
 }
+
+namespace {
+    class TestInputEnd {
+    public:
+        TestInputEnd() = default;
+        TestInputEnd(const TestInputEnd& a) = default;
+        TestInputEnd &operator=(const TestInputEnd& a) = default;
+    };
+
+    class TestInputIterator {
+    public:
+        TestInputIterator() = default;
+        explicit TestInputIterator(const char* s);
+        TestInputIterator(const TestInputIterator &a) = delete;
+        TestInputIterator(TestInputIterator &&a) = default;
+        ~TestInputIterator() noexcept = default;
+        TestInputIterator &operator=(const TestInputIterator &a) = delete;
+        TestInputIterator &operator=(TestInputIterator &&a) = default;
+        TestInputIterator &operator++();
+        char operator*() const;
+
+        using difference_type = int;
+        using value_type = char;
+        using iterator_concept = std::input_iterator_tag;
+    private:
+        const char *p;
+    };
+
+    TestInputIterator::TestInputIterator(const char *s)
+        : p{s}
+    {
+    }
+
+    TestInputIterator &TestInputIterator::operator++()
+    {
+        ++p;
+        return *this;
+    }
+
+    char TestInputIterator::operator*() const
+    {
+        return *p;
+    }
+
+    bool operator==(const TestInputIterator &i, const TestInputEnd &e)
+    {
+        (void)e; // unused
+        return *i == '\0';
+    }
+
+    bool operator!=(const TestInputIterator &i, const TestInputEnd &e)
+    {
+        (void)e; // unused
+        return *i != '\0';
+    }
+}
+
+TEST_CASE( "Constructor by C++20 Input Iterator (non copyable)", "[Catalog]" ) {
+    TestInputIterator b{test_data.c_str()};
+    TestInputEnd e;
+    Catalog catalog(b, e);
+
+    REQUIRE( catalog.GetError().size() == 1 );
+    REQUIRE( catalog.GetMetadata().size() == 2 );
+    REQUIRE( catalog.GetIndex().size() == 5 );
+    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().metadataCount == 1 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 1 );
+}
+
+TEST_CASE( "Add by C++20 Input Iterator (non copyable)", "[Catalog]" ) {
+    TestInputIterator b{test_data.c_str()};
+    TestInputEnd e;
+    Catalog catalog;
+    catalog.Add(b, e);
+
+    REQUIRE( catalog.GetError().size() == 1 );
+    REQUIRE( catalog.GetMetadata().size() == 2 );
+    REQUIRE( catalog.GetIndex().size() == 5 );
+    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().metadataCount == 1 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 1 );
+}
