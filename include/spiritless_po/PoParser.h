@@ -280,7 +280,7 @@ namespace spiritless_po {
     std::size_t PoParser::GetOctalNumber(PositionT<INP, Sentinel> &it)
     {
         std::string s;
-        for (;;) {
+        for (size_t i=0; i<3; ++i) {
             const char c = it.Get();
             if (std::isdigit(c, std::locale::classic()) && c != '8' && c != '9') {
                 s += c;
@@ -382,30 +382,43 @@ namespace spiritless_po {
             if (c == '\\') {
                 std::size_t val = 0;
                 const char c2 = it.Get();
-                it.Next();
                 switch (c2) {
                 case 'a':
                     s += '\a';
+                    it.Next();
                     break;
                 case 'b':
                     s += '\b';
+                    it.Next();
                     break;
                 case 'f':
                     s += '\f';
+                    it.Next();
                     break;
                 case 'n':
                     s += '\n';
+                    it.Next();
                     break;
                 case 'r':
                     s += '\r';
+                    it.Next();
                     break;
                 case 't':
                     s += '\t';
+                    it.Next();
                     break;
                 case 'v':
                     s += '\v';
+                    it.Next();
                     break;
                 case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
                     val = GetOctalNumber(it);
                     s += static_cast<char>(val);
                     break;
@@ -419,6 +432,7 @@ namespace spiritless_po {
                     throw PoParseError<INP, Sentinel>("This text has no terminator.", it);
                 default:
                     s += c2;
+                    it.Next();
                     break;
                 }
             } else if (c == '"') {

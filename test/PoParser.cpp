@@ -409,3 +409,22 @@ TEST_CASE( "Multi line strings in PO Entries", "[PoParser]" ) {
         REQUIRE( entries[6].error.size() == 0 );
     }
 }
+
+
+const string test_data_escape_sequence = R"(
+msgid "apple"
+msgstr "a\\b\ac\bd\fe\ng\rh\ti\vj\zk\033l\1111m\xABCDEFG"
+)";
+
+TEST_CASE( "Escape Sequence", "[PoParser]" ) {
+    auto entries = PoParser::GetEntries(test_data_escape_sequence.begin(), test_data_escape_sequence.end());
+    SECTION( "size" ) {
+        REQUIRE( entries.size() == 1 );
+    }
+    SECTION( "entries" ) {
+        REQUIRE( equal(entries[0], create("apple", { "a\\b\ac\bd\fe\ng\rh\ti\vjzk\x1bl\x49" "1m\xefG" }, "")) );
+    }
+    SECTION( "errors" ) {
+        REQUIRE( entries[0].error.size() == 0 );
+    }
+}
