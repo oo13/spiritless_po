@@ -96,3 +96,32 @@ TEST_CASE( "Empty keys in Metadata", "[MetadataParser]" ) {
     REQUIRE( metadata["Project-Id-Version"] ==  "test-data empty" );
     REQUIRE( metadata["POT-Creation-Date"] ==  "2022-12-11 19:87+0000" );
 }
+
+
+const string test_data_space_only_value = R"(Project-Id-Version: test-data space only value
+Empty Value:
+While Space Only:                
+POT-Creation-Date: 2022-12-11 19:87+0000
+)";
+
+TEST_CASE( "Space only value in Metadata", "[MetadataParser]" ) {
+    auto metadata = MetadataParser::Parse(test_data_space_only_value);
+    REQUIRE( metadata.size() == 4 );
+    REQUIRE( metadata["Project-Id-Version"] ==  "test-data space only value" );
+    REQUIRE( metadata["Empty Value"] == "" );
+    REQUIRE( metadata["While Space Only"] == "" );
+    REQUIRE( metadata["POT-Creation-Date"] ==  "2022-12-11 19:87+0000" );
+}
+
+
+const string test_data_incomplete_key = R"(Project-Id-Version: test-data incomplete key
+Incomplete 
+POT-Creation-Date: 2022-12-11 19:87+0000
+)";
+
+TEST_CASE( "Incomplete key in Metadata", "[MetadataParser]" ) {
+    auto metadata = MetadataParser::Parse(test_data_incomplete_key);
+    REQUIRE( metadata.size() == 2 );
+    REQUIRE( metadata["Project-Id-Version"] ==  "test-data incomplete key" );
+    REQUIRE( metadata["POT-Creation-Date"] ==  "2022-12-11 19:87+0000" );
+}

@@ -43,6 +43,8 @@ namespace spiritless_po {
                 if (stat == KEY) {
                     if (c == ':') {
                         stat = SPACE;
+                    } else if (c == '\n') {
+                        key.clear();
                     } else {
                         key += c;
                     }
