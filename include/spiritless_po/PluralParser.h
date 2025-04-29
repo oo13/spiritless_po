@@ -14,7 +14,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <iterator>
+#include <limits>
 #include <locale>
 #include <stdexcept>
 #include <string>
@@ -132,12 +134,13 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                          size_t max_data_size);
             explicit FunctionType(CompiledPluralFunctionT func);
 
+            static uint_fast32_t Equivalent32bitUint(NumT n);
             NumT Read32(size_t &i) const;
 
         private:
             CompiledPluralFunctionT compiled_func;
             std::vector<PluralParser::Opcode> code;
-            mutable std::vector<PluralParser::NumT> data;
+            mutable std::vector<std::uint_fast32_t> data;
         };
 
 
@@ -361,7 +364,18 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     {
     }
 
-    inline PluralParser::NumT PluralParser::FunctionType::Read32(size_t &i) const
+    // cf. https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
+    inline uint_fast32_t PluralParser::FunctionType::Equivalent32bitUint(NumT n)
+    {
+        if (std::numeric_limits<NumT>::max() > 0xFFFFFFFF) {
+            if (n > 0xFFFFFFFF) {
+                n = n % 1000000 + 1000000;
+            }
+        }
+        return n;
+    }
+
+    inline uint_fast32_t PluralParser::FunctionType::Read32(size_t &i) const
     {
         NumT n = code[i];
         n <<= 8;
@@ -382,6 +396,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT_EXECUTE
         PluralParser::DebugPrintCode(code);
 #endif
+        const std::uint_fast32_t n32 = Equivalent32bitUint(n);
         size_t top = static_cast<size_t>(-1);
         for (size_t i = 0; i < code.size() && code[i] != END; ++i) {
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_PRINT_EXECUTE
@@ -482,7 +497,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                 break;
             case VAR:
                 ++top;
-                data.at(top) = n;
+                data.at(top) = n32;
                 break;
             default:
                 assert(false);
