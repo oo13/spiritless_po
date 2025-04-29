@@ -135,7 +135,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             explicit FunctionType(CompiledPluralFunctionT func);
 
             static std::uint_fast32_t Equivalent32bitUint(NumT n);
-            NumT Read32(size_t &i) const;
+            std::uint_fast32_t Read32(size_t &i) const;
 
         private:
             CompiledPluralFunctionT compiled_func;
