@@ -134,7 +134,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                          size_t max_data_size);
             explicit FunctionType(CompiledPluralFunctionT func);
 
-            static uint_fast32_t Equivalent32bitUint(NumT n);
+            static std::uint_fast32_t Equivalent32bitUint(NumT n);
             NumT Read32(size_t &i) const;
 
         private:
@@ -365,7 +365,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     }
 
     // cf. https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
-    inline uint_fast32_t PluralParser::FunctionType::Equivalent32bitUint(NumT n)
+    inline std::uint_fast32_t PluralParser::FunctionType::Equivalent32bitUint(NumT n)
     {
         if (std::numeric_limits<NumT>::max() > 0xFFFFFFFF) {
             if (n > 0xFFFFFFFF) {
@@ -375,7 +375,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         return n;
     }
 
-    inline uint_fast32_t PluralParser::FunctionType::Read32(size_t &i) const
+    inline std::uint_fast32_t PluralParser::FunctionType::Read32(size_t &i) const
     {
         NumT n = code[i];
         n <<= 8;
