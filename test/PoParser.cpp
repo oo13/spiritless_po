@@ -428,3 +428,18 @@ TEST_CASE( "Escape Sequence", "[PoParser]" ) {
         REQUIRE( entries[0].error.size() == 0 );
     }
 }
+
+
+const string test_data_eof_in_text = R"(
+msgid "apples"
+msgstr "APPLES)";
+
+TEST_CASE( "EOF in text of a PO Entry", "[PoParser]" ) {
+    auto entries = PoParser::GetEntries(test_data_eof_in_text.begin(), test_data_eof_in_text.end());
+    SECTION( "size" ) {
+        REQUIRE( entries.size() == 1 );
+    }
+    SECTION( "no errors" ) {
+        REQUIRE( entries[0].error.size() > 0 );
+    }
+}

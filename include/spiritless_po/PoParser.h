@@ -442,6 +442,8 @@ namespace spiritless_po {
                 }
                 it.Next();
                 return;
+            } else if (it.IsEnd()) {
+                throw PoParseError<INP, Sentinel>("This text has no terminator.", it);
             } else {
                 s += c;
             }
