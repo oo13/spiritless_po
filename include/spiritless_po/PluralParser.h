@@ -186,6 +186,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             NUM,
             NUM32,
             NOT,
+            BOOL,
             MULT,
             DIV,
             MOD,
@@ -245,6 +246,9 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             break;
         case NOT:
             std::cout << "NOT";
+            break;
+        case BOOL:
+            std::cout << "BOOL";
             break;
         case MULT:
             std::cout << "MULT";
@@ -417,6 +421,9 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                 break;
             case NOT:
                 data[top] = !data.at(top);
+                break;
+            case BOOL:
+                data[top] = data.at(top) != 0;
                 break;
             case MULT:
                 data.at(top - 1) *= data.at(top);
@@ -770,6 +777,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             throw ExpressionError("Bug: IF32 and ELSE32 must not be pushed to code.", it);
             break;
         case NOT:
+        case BOOL:
             break;
         case END:
             throw ExpressionError("Bug: END must not be pushed to code.", it);
@@ -1062,11 +1070,13 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     inline void PluralParser::ParseTerm0(InP &it, const InP end)
     {
         bool isNot = false;
+        bool isBool = false;
         for (;;) {
             SkipSpaces(it, end);
             if (it != end && *it == '!') {
                 ++it;
                 isNot = !isNot;
+                isBool = true;
             } else {
                 break;
             }
@@ -1074,6 +1084,8 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         ParseValue(it, end);
         if (isNot) {
             PushOpcode(NOT, it);
+        } else if (isBool) {
+            PushOpcode(BOOL, it);
         }
     }
 
