@@ -161,17 +161,11 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         void ParseTerm7(InP &it, InP end);
         void ParseTerm71(InP &it, InP end);
         void ParseTerm6(InP &it, InP end);
-        void ParseTerm61(InP &it, InP end);
         void ParseTerm5(InP &it, InP end);
-        void ParseTerm51(InP &it, InP end);
         void ParseTerm4(InP &it, InP end);
-        void ParseTerm41(InP &it, InP end);
         void ParseTerm3(InP &it, InP end);
-        void ParseTerm31(InP &it, InP end);
         void ParseTerm2(InP &it, InP end);
-        void ParseTerm21(InP &it, InP end);
         void ParseTerm1(InP &it, InP end);
-        void ParseTerm11(InP &it, InP end);
         void ParseTerm0(InP &it, InP end);
         void ParseValue(InP &it, InP end);
 
@@ -660,7 +654,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                 [](NumT n) -> NumT { return n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; }
             },
             {
-                { VAR, NUM, 10, MOD, NUM, 1, EQ, VAR, NUM, 100, MOD, NUM, 11, NE, AND, IF, 4, NUM, 0, ELSE, 39, VAR, NUM, 10, MOD, NUM, 2, GE, VAR, NUM, 10, MOD, NUM, 4, LE, VAR, NUM, 100, MOD, NUM, 10, LT, VAR, NUM, 100, MOD, NUM, 20, GE, OR, AND, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                { VAR, NUM, 10, MOD, NUM, 1, EQ, VAR, NUM, 100, MOD, NUM, 11, NE, AND, IF, 4, NUM, 0, ELSE, 39, VAR, NUM, 10, MOD, NUM, 2, GE, VAR, NUM, 10, MOD, NUM, 4, LE, AND, VAR, NUM, 100, MOD, NUM, 10, LT, VAR, NUM, 100, MOD, NUM, 20, GE, OR, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
                 [](NumT n) -> NumT { return n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; }
             },
             {
@@ -672,7 +666,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
                 [](NumT n) -> NumT { return n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2; }
             },
             {
-                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 39, VAR, NUM, 10, MOD, NUM, 2, GE, VAR, NUM, 10, MOD, NUM, 4, LE, VAR, NUM, 100, MOD, NUM, 10, LT, VAR, NUM, 100, MOD, NUM, 20, GE, OR, AND, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
+                { VAR, NUM, 1, EQ, IF, 4, NUM, 0, ELSE, 39, VAR, NUM, 10, MOD, NUM, 2, GE, VAR, NUM, 10, MOD, NUM, 4, LE, AND, VAR, NUM, 100, MOD, NUM, 10, LT, VAR, NUM, 100, MOD, NUM, 20, GE, OR, AND, IF, 4, NUM, 1, ELSE, 2, NUM, 2 },
                 [](NumT n) -> NumT { return n == 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2; }
             },
             {
@@ -909,159 +903,147 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         }
     }
 
-    // term6 = term5, term61;
+    // term6 = term5 { '||', term5 }
     inline void PluralParser::ParseTerm6(InP &it, const InP end)
     {
         ParseTerm5(it, end);
-        ParseTerm61(it, end);
-    }
-
-    // term61 = e | '||', term6;
-    inline void PluralParser::ParseTerm61(InP &it, const InP end)
-    {
-        SkipSpaces(it, end);
-        if (it != end && *it == '|') {
-            ++it;
+        for (;;) {
+            SkipSpaces(it, end);
             if (it != end && *it == '|') {
                 ++it;
-                ParseTerm6(it, end);
-                PushOpcode(OR, it);
+                if (it != end && *it == '|') {
+                    ++it;
+                    ParseTerm5(it, end);
+                    PushOpcode(OR, it);
+                } else {
+                    throw ExpressionError("Parse error: '|' is expected.", it);
+                }
             } else {
-                throw ExpressionError("Parse error: '|' is expected.", it);
+                break;
             }
         }
     }
 
-    // term5 = term4, term51;
+    // term5 = term4 { '&&', term4 };
     inline void PluralParser::ParseTerm5(InP &it, const InP end)
     {
         ParseTerm4(it, end);
-        ParseTerm51(it, end);
-    }
-
-    // term51 = e | '&&', term5;
-    inline void PluralParser::ParseTerm51(InP &it, const InP end)
-    {
-        SkipSpaces(it, end);
-        if (it != end && *it == '&') {
-            ++it;
+        for (;;) {
+            SkipSpaces(it, end);
             if (it != end && *it == '&') {
                 ++it;
-                ParseTerm5(it, end);
-                PushOpcode(AND, it);
+                if (it != end && *it == '&') {
+                    ++it;
+                    ParseTerm4(it, end);
+                    PushOpcode(AND, it);
+                } else {
+                    throw ExpressionError("Parse error: '&' is expected.", it);
+                }
             } else {
-                throw ExpressionError("Parse error: '&' is expected.", it);
+                break;
             }
         }
     }
 
-    // term4 = term3, term41;
+    // term4 = term3 { '==' | '!=', term3 }
     inline void PluralParser::ParseTerm4(InP &it, const InP end)
     {
         ParseTerm3(it, end);
-        ParseTerm41(it, end);
-    }
-
-    // term41 = e | '==', term4 | '!=', term4;
-    inline void PluralParser::ParseTerm41(InP &it, const InP end)
-    {
-        SkipSpaces(it, end);
-        if (it != end && (*it == '=' || *it == '!')) {
-            const bool eq = *it == '=';
-            ++it;
-            if (it != end && *it == '=') {
+        for (;;) {
+            SkipSpaces(it, end);
+            if (it != end && (*it == '=' || *it == '!')) {
+                const bool eq = *it == '=';
                 ++it;
-                ParseTerm4(it, end);
-                if (eq) {
-                    PushOpcode(EQ, it);
+                if (it != end && *it == '=') {
+                    ++it;
+                    ParseTerm3(it, end);
+                    if (eq) {
+                        PushOpcode(EQ, it);
+                    } else {
+                        PushOpcode(NE, it);
+                    }
                 } else {
-                    PushOpcode(NE, it);
+                    throw ExpressionError("Parse error: '=' is expected.", it);
                 }
             } else {
-                throw ExpressionError("Parse error: '=' is expected.", it);
+                break;
             }
         }
     }
 
-    // term3 = term2, term31;
+    // term3 = term2 { '<' | '<=' | '>' | '>=', term2 }
     inline void PluralParser::ParseTerm3(InP &it, const InP end)
     {
         ParseTerm2(it, end);
-        ParseTerm31(it, end);
-    }
-
-    // term31 = e | '<', term3 | '<=', term3 | '>', term3 | '<=', term3;
-    inline void PluralParser::ParseTerm31(InP &it, const InP end)
-    {
-        SkipSpaces(it, end);
-        if (it != end && (*it == '<' || *it == '>')) {
-            const bool lt = *it == '<';
-            ++it;
-            const bool eq = it != end && *it == '=';
-            if (eq) {
+        for (;;) {
+            SkipSpaces(it, end);
+            if (it != end && (*it == '<' || *it == '>')) {
+                const bool lt = *it == '<';
                 ++it;
-            }
-            ParseTerm3(it, end);
-            if (lt) {
+                const bool eq = it != end && *it == '=';
                 if (eq) {
-                    PushOpcode(LE, it);
+                    ++it;
+                }
+                ParseTerm2(it, end);
+                if (lt) {
+                    if (eq) {
+                        PushOpcode(LE, it);
+                    } else {
+                        PushOpcode(LT, it);
+                    }
                 } else {
-                    PushOpcode(LT, it);
+                    if (eq) {
+                        PushOpcode(GE, it);
+                    } else {
+                        PushOpcode(GT, it);
+                    }
                 }
             } else {
-                if (eq) {
-                    PushOpcode(GE, it);
-                } else {
-                    PushOpcode(GT, it);
-                }
+                break;
             }
         }
     }
 
-    // term2 = term1, term21;
+    // term2 = term1 { '+' | '-' , term1 }
     inline void PluralParser::ParseTerm2(InP &it, const InP end)
     {
         ParseTerm1(it, end);
-        ParseTerm21(it, end);
-    }
-
-    // term21 = e | '+', term2 | '-', term2;
-    inline void PluralParser::ParseTerm21(InP &it, const InP end)
-    {
-        SkipSpaces(it, end);
-        if (it != end && (*it == '+' || *it == '-')) {
-            const bool plus = *it == '+';
-            ++it;
-            ParseTerm2(it, end);
-            if (plus) {
-                PushOpcode(ADD, it);
+        for (;;) {
+            SkipSpaces(it, end);
+            if (it != end && (*it == '+' || *it == '-')) {
+                const bool plus = *it == '+';
+                ++it;
+                ParseTerm1(it, end);
+                if (plus) {
+                    PushOpcode(ADD, it);
+                } else {
+                    PushOpcode(SUB, it);
+                }
             } else {
-                PushOpcode(SUB, it);
+                break;
             }
         }
     }
 
-    // term1 = term0, term11;
+    // term1 = term0 { '*' | '/' | '%' , term0 }
     inline void PluralParser::ParseTerm1(InP &it, const InP end)
     {
         ParseTerm0(it, end);
-        ParseTerm11(it, end);
-    }
-
-    // term11 = e | '*', term1 | '/', term1 | '%', term1;
-    inline void PluralParser::ParseTerm11(InP &it, const InP end)
-    {
-        SkipSpaces(it, end);
-        if (it != end && (*it == '*' || *it == '/' || *it == '%')) {
-            const char op = *it;
-            ++it;
-            ParseTerm1(it, end);
-            if (op == '*') {
-                PushOpcode(MULT, it);
-            } else if (op == '/') {
-                PushOpcode(DIV, it);
+        for (;;) {
+            SkipSpaces(it, end);
+            if (it != end && (*it == '*' || *it == '/' || *it == '%')) {
+                const char op = *it;
+                ++it;
+                ParseTerm0(it, end);
+                if (op == '*') {
+                    PushOpcode(MULT, it);
+                } else if (op == '/') {
+                    PushOpcode(DIV, it);
+                } else {
+                    PushOpcode(MOD, it);
+                }
             } else {
-                PushOpcode(MOD, it);
+                break;
             }
         }
     }

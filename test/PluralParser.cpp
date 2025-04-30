@@ -239,6 +239,42 @@ TEMPLATE_TEST_CASE( "Default Constructor of PluralFunction", "[PluralFunction]",
     REQUIRE( plural_function(99) == 0 );
 }
 
+TEMPLATE_TEST_CASE( "Operators of PluralFunction", "[PluralFunction]", PluralParser, ENABLE_ASSERT::PluralParser, INTERPRETER::PluralParser ) {
+    SECTION( "Numeric operators priority and association" ) {
+        auto it = PluralParser::Parse("nplurals=2; plural=1 + 2 * 3 + (4 + 5) * 6 / 5 % 3 - 7 + 8;");
+        REQUIRE( it.first == 2 );
+        REQUIRE( it.second(0) == 1 + 2 * 3 + (4 + 5) * 6 / 5 % 3 - 7 + 8 );
+    };
+    SECTION( "Logical operators priority" ) {
+        auto it1 = PluralParser::Parse("nplurals=2; plural=1 || 0 && 0;");
+        REQUIRE( it1.first == 2 );
+        REQUIRE( it1.second(0) == 1 );
+
+        auto it2 = PluralParser::Parse("nplurals=2; plural=0 && 0 || 1;");
+        REQUIRE( it2.first == 2 );
+        REQUIRE( it2.second(0) == 1 );
+    };
+    SECTION( "Complare operators association" ) {
+        auto it = PluralParser::Parse("nplurals=2; plural=5 > 4 >= 2;");
+        REQUIRE( it.first == 2 );
+        REQUIRE( it.second(0) == 0 );
+    };
+    SECTION( "Conditional operator association" ) {
+        auto it = PluralParser::Parse("nplurals=2; plural=n == 1 ? 0 : n == 2 ? 1 : n == 3 ? 2 : n == 4 ? 3 : 4;");
+        REQUIRE( it.first == 2 );
+        REQUIRE( it.second(0) == 4 );
+        REQUIRE( it.second(1) == 0 );
+        REQUIRE( it.second(2) == 1 );
+        REQUIRE( it.second(3) == 2 );
+        REQUIRE( it.second(4) == 3 );
+    };
+    SECTION( "Operators priority" ) {
+        auto it = PluralParser::Parse("nplurals=2; plural=1 + 2 && 0 + 0 >= 1 ? 2 : 3;");
+        REQUIRE( it.first == 2 );
+        REQUIRE( it.second(0) == 3 );
+    };
+}
+
 TEMPLATE_TEST_CASE( "Equality in PluralFunction", "[PluralFunction]",  PluralParser, ENABLE_ASSERT::PluralParser, INTERPRETER::PluralParser, DEBUG_32BIT_NUM::PluralParser, DEBUG_32BIT_IF::PluralParser, DEBUG_32BIT_ELSE::PluralParser, DEBUG_32BIT_IF_ELSE::PluralParser, DEBUG_32BIT_ALL::PluralParser ) {
     vector<typename TestType::FunctionType> test_funcs;
     for (auto &info : plural_forms) {
