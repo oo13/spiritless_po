@@ -272,6 +272,9 @@ namespace spiritless_po {
                 break;
             }
         }
+        if (s.empty()) {
+            throw PoParseError<INP, Sentinel>("'0'..'9' is expected.", it);
+        }
         return std::stoi(s);
     }
 
@@ -289,6 +292,9 @@ namespace spiritless_po {
                 break;
             }
         }
+        if (s.empty()) {
+            throw PoParseError<INP, Sentinel>("'0'..'7' is expected.", it);
+        }
         return std::stoi(s, nullptr, 8);
     }
 
@@ -305,6 +311,9 @@ namespace spiritless_po {
             } else {
                 break;
             }
+        }
+        if (s.empty()) {
+            throw PoParseError<INP, Sentinel>("[0-9A-Fa-f] is expected.", it);
         }
         return std::stoi(s, nullptr, 16);
     }
@@ -325,6 +334,9 @@ namespace spiritless_po {
     PoParser::LineT PoParser::DecisionTypeOfLine(PositionT<INP, Sentinel> &it)
     {
         SkipSpacesExceptNL(it);
+        if (it.IsEnd()) {
+            return LineT::END;
+        }
         const char c = it.Get();
         if (c == '\n') {
             return LineT::EMPTY;
@@ -551,6 +563,9 @@ namespace spiritless_po {
                 }
                 stat = DecisionTypeOfLine(it);
             }
+            if (stat == LineT::UNKNOWN) {
+                throw PoParseError<INP, Sentinel>("An unknown keyword is found.", it);
+            }
             if (it.IsEnd()) {
                 previousLine = LineT::END;
                 return out;
@@ -601,7 +616,7 @@ namespace spiritless_po {
                 SkipUntilNL(it);
                 it.Next();
                 stat = DecisionTypeOfLine(it);
-            } while (stat != LineT::EMPTY && stat != LineT::COMMENT && stat != LineT::FLAG_COMMENT && stat != LineT::MSGCTXT && stat != LineT::MSGID && stat != LineT::UNKNOWN);
+            } while (stat != LineT::EMPTY && stat != LineT::COMMENT && stat != LineT::FLAG_COMMENT && stat != LineT::MSGCTXT && stat != LineT::MSGID && stat != LineT::END && stat != LineT::UNKNOWN);
         }
         previousLine = stat;
         return out;
@@ -616,10 +631,12 @@ namespace spiritless_po {
         LineT typeOfLine = LineT::START;
         while (pos.IsNotEnd()) {
             PoEntryT value = ParseOneEntry(pos, typeOfLine);
+            if (!value.error.empty() || !value.msgstr.empty()) {
+                entries.push_back(std::move(value));
+            }
             if (typeOfLine == LineT::END) {
                 break;
             }
-            entries.push_back(std::move(value));
         }
         return entries;
     }
