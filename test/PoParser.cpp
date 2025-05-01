@@ -443,3 +443,50 @@ TEST_CASE( "EOF in text of a PO Entry", "[PoParser]" ) {
         REQUIRE( entries[0].error.size() > 0 );
     }
 }
+
+
+const string test_data_no_quote_at_beginning_of_text_1 = R"(
+msgid xapples"
+msgstr "APPLES"
+
+msgid "bananas"
+msgstr "BANANAS"
+)";
+
+TEST_CASE( "No quote at beginning of text (1/2)", "[PoParser]" ) {
+    auto entries = PoParser::GetEntries(test_data_no_quote_at_beginning_of_text_1.begin(), test_data_no_quote_at_beginning_of_text_1.end());
+    SECTION( "size" ) {
+        REQUIRE( entries.size() == 2 );
+    }
+    SECTION( "entries" ) {
+        REQUIRE( equal(entries[1], create("bananas", { "BANANAS" }, "")) );
+    }
+    SECTION( "errors" ) {
+        REQUIRE( entries[0].error.size() > 0 );
+        REQUIRE( entries[1].error.size() == 0 );
+    }
+}
+
+
+const string test_data_no_quote_at_beginning_of_text_2 = R"(
+msgid ""
+xapples"
+msgstr "APPLES"
+
+msgid "bananas"
+msgstr "BANANAS"
+)";
+
+TEST_CASE( "No quote at beginning of text (2/2)", "[PoParser]" ) {
+    auto entries = PoParser::GetEntries(test_data_no_quote_at_beginning_of_text_2.begin(), test_data_no_quote_at_beginning_of_text_2.end());
+    SECTION( "size" ) {
+        REQUIRE( entries.size() == 2 );
+    }
+    SECTION( "entries" ) {
+        REQUIRE( equal(entries[1], create("bananas", { "BANANAS" }, "")) );
+    }
+    SECTION( "errors" ) {
+        REQUIRE( entries[0].error.size() > 0 );
+        REQUIRE( entries[1].error.size() == 0 );
+    }
+}

@@ -374,7 +374,9 @@ namespace spiritless_po {
     template <typename INP, typename Sentinel>
     void PoParser::ParseText(PositionT<INP, Sentinel> &it, std::string &s)
     {
-        assert(it.Get() == '"');
+        if (it.Get() != '"') {
+            throw PoParseError<INP, Sentinel>("'\"' is expected.", it);
+        }
         it.Next();
         for (;;) {
             const char c = it.Get();
