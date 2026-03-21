@@ -139,7 +139,7 @@ using NumT = PluralParser::NumT;
 
 #define STR_IMPL(X) #X
 #define STR(X) STR_IMPL(X)
-#define PLURAL_FORMS(X) "Plural-Forms: nplurals=1; plural=" STR(X) ";\n"
+#define PLURAL_FORMS(X) STR(X)
 
 namespace {
     const size_t TOTAL_PLURAL_EXPRESSION = 22;
@@ -234,44 +234,38 @@ namespace {
 
 TEMPLATE_TEST_CASE( "Default Constructor of PluralFunction", "[PluralFunction]", PluralParser, ENABLE_ASSERT::PluralParser, INTERPRETER::PluralParser ) {
     PluralParser::FunctionType plural_function;
-    REQUIRE( plural_function(0) == 0 );
+    REQUIRE( plural_function(0) == 1 );
     REQUIRE( plural_function(1) == 0 );
-    REQUIRE( plural_function(99) == 0 );
+    REQUIRE( plural_function(99) == 1 );
 }
 
 TEMPLATE_TEST_CASE( "Operators of PluralFunction", "[PluralFunction]", PluralParser, ENABLE_ASSERT::PluralParser, INTERPRETER::PluralParser ) {
     SECTION( "Numeric operators priority and association" ) {
-        auto it = PluralParser::Parse("nplurals=2; plural=1 + 2 * 3 + (4 + 5) * 6 / 5 % 3 - 7 + 8;");
-        REQUIRE( it.first == 2 );
-        REQUIRE( it.second(0) == 1 + 2 * 3 + (4 + 5) * 6 / 5 % 3 - 7 + 8 );
+        auto it = PluralParser::Parse("1 + 2 * 3 + (4 + 5) * 6 / 5 % 3 - 7 + 8");
+        REQUIRE( it(0) == 1 + 2 * 3 + (4 + 5) * 6 / 5 % 3 - 7 + 8 );
     };
     SECTION( "Logical operators priority" ) {
-        auto it1 = PluralParser::Parse("nplurals=2; plural=1 || 0 && 0;");
-        REQUIRE( it1.first == 2 );
-        REQUIRE( it1.second(0) == 1 );
+        auto it1 = PluralParser::Parse("1 || 0 && 0");
+        REQUIRE( it1(0) == 1 );
 
-        auto it2 = PluralParser::Parse("nplurals=2; plural=0 && 0 || 1;");
-        REQUIRE( it2.first == 2 );
-        REQUIRE( it2.second(0) == 1 );
+        auto it2 = PluralParser::Parse("0 && 0 || 1");
+        REQUIRE( it2(0) == 1 );
     };
     SECTION( "Complare operators association" ) {
-        auto it = PluralParser::Parse("nplurals=2; plural=5 > 4 >= 2;");
-        REQUIRE( it.first == 2 );
-        REQUIRE( it.second(0) == 0 );
+        auto it = PluralParser::Parse("5 > 4 >= 2");
+        REQUIRE( it(0) == 0 );
     };
     SECTION( "Conditional operator association" ) {
-        auto it = PluralParser::Parse("nplurals=2; plural=n == 1 ? 0 : n == 2 ? 1 : n == 3 ? 2 : n == 4 ? 3 : 4;");
-        REQUIRE( it.first == 2 );
-        REQUIRE( it.second(0) == 4 );
-        REQUIRE( it.second(1) == 0 );
-        REQUIRE( it.second(2) == 1 );
-        REQUIRE( it.second(3) == 2 );
-        REQUIRE( it.second(4) == 3 );
+        auto it = PluralParser::Parse("n == 1 ? 0 : n == 2 ? 1 : n == 3 ? 2 : n == 4 ? 3 : 4");
+        REQUIRE( it(0) == 4 );
+        REQUIRE( it(1) == 0 );
+        REQUIRE( it(2) == 1 );
+        REQUIRE( it(3) == 2 );
+        REQUIRE( it(4) == 3 );
     };
     SECTION( "Operators priority" ) {
-        auto it = PluralParser::Parse("nplurals=2; plural=1 + 2 && 0 + 0 >= 1 ? 2 : 3;");
-        REQUIRE( it.first == 2 );
-        REQUIRE( it.second(0) == 3 );
+        auto it = PluralParser::Parse("1 + 2 && 0 + 0 >= 1 ? 2 : 3");
+        REQUIRE( it(0) == 3 );
     };
 }
 
@@ -279,7 +273,7 @@ TEMPLATE_TEST_CASE( "Equality in PluralFunction", "[PluralFunction]",  PluralPar
     vector<typename TestType::FunctionType> test_funcs;
     for (auto &info : plural_forms) {
         auto it = TestType::Parse(info);
-        test_funcs.push_back(it.second);
+        test_funcs.push_back(it);
     }
 
     auto i = GENERATE(range(0, 1000));
@@ -404,7 +398,7 @@ TEST_CASE( "Plural Function Benchmark", "[!benchmark]" ) {
     vector<PluralParser::FunctionType> test_funcs;
     for (auto &info : plural_forms) {
         auto it = PluralParser::Parse(info);
-        test_funcs.push_back(it.second);
+        test_funcs.push_back(it);
     }
 
     BENCHMARK( STR(PE00) ) {

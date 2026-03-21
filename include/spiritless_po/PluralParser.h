@@ -1,7 +1,7 @@
 /** Plural forms information parser.
     \file PluralParser.h
     \author OOTA, Masato
-    \copyright Copyright © 2019, 2022 OOTA, Masato
+    \copyright Copyright © 2019, 2022, 2026 OOTA, Masato
     \par License Boost
     \parblock
       This program is distributed under the Boost Software License Version 1.0.
@@ -47,12 +47,12 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
         typedef unsigned long int NumT;
 
         /** Parse a plural form information.
-            \param [in] plural_form_info A plural form information.
-            \return The pair of the number of the plurals and the function to calculate the plural expression.
+            \param [in] plural The value of plural in the metadata.
+            \return The function to calculate the plural expression.
 
-            This function parses a plural form information, such as "Plural-Forms: nplurals=2; plural=n != 1;". The result is the pair of 2 and the equivalent to [](NumT n) -> NumT { return n != 1; }.
+            This function parses a plural form information, such as "n != 1". The result is a function, such as [](NumT n) -> NumT { return n != 1; }.
         */
-        static std::pair<NumT, FunctionType> Parse(const std::string &plural_form_info);
+        static FunctionType Parse(const std::string &plural_expression);
 
 
         /** The iterator type for the plural form information. */
@@ -150,7 +150,6 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
 
         static void SkipSpaces(InP &it, InP end);
         static NumT GetNumber(InP &it, InP end);
-        static std::pair<InP, InP> GetExpression(InP it, InP end, const std::string &keyword);
         FunctionType CreatePluralFunction();
         static FunctionType ParseExpression(InP &it, InP end);
         void PushOpcode(Opcode op, InP it);
@@ -340,7 +339,7 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
 
 
     inline PluralParser::FunctionType::FunctionType()
-        : FunctionType([](NumT) -> NumT { return 0; })
+        : FunctionType([](NumT n) -> NumT { return n!=1; })
     {
     }
 
@@ -530,18 +529,11 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
 
 
     // Plural forms information parser.
-    inline std::pair<PluralParser::NumT, PluralParser::FunctionType>
-    PluralParser::Parse(const std::string &plural_exp)
+    inline PluralParser::FunctionType
+    PluralParser::Parse(const std::string &plural_expression)
     {
-        const InP begin = plural_exp.cbegin();
-        const InP end = plural_exp.cend();
-        auto npluralsRange = GetExpression(begin, end, "nplurals");
-        const NumT nplurals = GetNumber(npluralsRange.first, npluralsRange.second);
-
-        auto pluralRange = GetExpression(begin, end, "plural");
-        const auto f = ParseExpression(pluralRange.first, pluralRange.second);
-
-        return std::make_pair(nplurals, f);
+        auto begin = plural_expression.begin();
+        return ParseExpression(begin, plural_expression.cend());
     }
 
 
@@ -549,7 +541,8 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
     // Skip spaces (Utility function)
     inline void PluralParser::SkipSpaces(InP &it, const InP end)
     {
-        while (it != end && std::isspace(*it, std::locale::classic())) {
+        // GNU gettext tools seem to skip only ' ' and '\t'.
+        while (it != end && (*it == ' ' || *it == '\t')) {
             ++it;
         }
     }
@@ -565,31 +558,6 @@ namespace SPIRITLESS_PO_DEBUG_PLURAL_PARSER_NAMESPACE {
             return std::stoi(s);
         }
         throw ExpressionError("Parse error: '0'..'9' is expected.", it);
-    }
-
-    // get a expression. (Utility function)
-    inline std::pair<PluralParser::InP, PluralParser::InP>
-    PluralParser::GetExpression(const InP begin, const InP end, const std::string &keyword)
-    {
-        auto curIt = std::find_end(begin, end, keyword.cbegin(), keyword.cend());
-        if (curIt == end) {
-            throw ExpressionError("Parse error: '" + keyword + "' is not found.", begin);
-        }
-        std::advance(curIt, keyword.length());
-        SkipSpaces(curIt, end);
-        if (*curIt != '=') {
-            throw ExpressionError("'=' is expected.", curIt);
-        }
-        ++curIt;
-        SkipSpaces(curIt, end);
-        const InP find_pos = curIt;
-        while (curIt != end && *curIt != ';') {
-            ++curIt;
-        }
-        if (*curIt != ';') {
-            throw ExpressionError("';' is expected.", curIt);
-        }
-        return std::make_pair(find_pos, curIt);
     }
 
 #ifdef SPIRITLESS_PO_DEBUG_PLURAL_PARSER_USE_INTERPRETER

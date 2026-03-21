@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     }
 
     spiritless_po::Catalog catalog;
-#if 0
+#if 1
     /* Add version */
     for (size_t i = 0; i < static_cast<size_t>(argc) - 1; i++) {
         ifstream f(argv[i + 1]);

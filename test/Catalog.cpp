@@ -1,5 +1,5 @@
 /*
-  Copyright © 2022, 2024 OOTA, Masato
+  Copyright © 2022, 2024, 2026 OOTA, Masato
   License: CC-BY-SA-3.0
   See https://creativecommons.org/licenses/by-sa/3.0/legalcode for license details.
 */
@@ -151,11 +151,11 @@ TEST_CASE( "Constructor(begin, end) in Catalog", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 5 );
-    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetIndex().size() == 6 );
+    REQUIRE( catalog.GetStringTable().size() == 13 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
     REQUIRE( &catalog.gettext(singular) == &singular );
     REQUIRE( &catalog.ngettext(singular, plural, 1) == &singular );
@@ -182,11 +182,11 @@ TEST_CASE( "Constructor(is) in Catalog", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 5 );
-    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetIndex().size() == 6 );
+    REQUIRE( catalog.GetStringTable().size() == 13 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
     REQUIRE( &catalog.gettext(singular) == &singular );
     REQUIRE( &catalog.ngettext(singular, plural, 1) == &singular );
@@ -261,11 +261,11 @@ TEST_CASE( "Catalog::Clear()", "[Catalog]" ) {
     Catalog catalog(test_data.begin(), test_data.end());
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 5 );
-    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetIndex().size() == 6 );
+    REQUIRE( catalog.GetStringTable().size() == 13 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
     catalog.Clear();
     REQUIRE( catalog.GetError().size() == 0 );
@@ -343,12 +343,12 @@ TEST_CASE( "Catalog::Add(begin, end)", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 3 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 9 );
-    REQUIRE( catalog.GetStringTable().size() == 20 );
+    REQUIRE( catalog.GetIndex().size() == 10 );
+    REQUIRE( catalog.GetStringTable().size() == 21 );
     REQUIRE( catalog.GetStatistics().totalCount == 20 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 9 );
-    REQUIRE( catalog.GetStatistics().discardedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 10 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 7 );
     REQUIRE( catalog.gettext("apples") == "APPLES" );
     REQUIRE( catalog.ngettext("corn", "corns", 1) == "CORN#1" );
     REQUIRE( catalog.ngettext("corn", "corns", 2) == "CORN#2" );
@@ -375,12 +375,12 @@ TEST_CASE( "Catalog::Add(is)", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 3 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 9 );
-    REQUIRE( catalog.GetStringTable().size() == 20 );
+    REQUIRE( catalog.GetIndex().size() == 10 );
+    REQUIRE( catalog.GetStringTable().size() == 21 );
     REQUIRE( catalog.GetStatistics().totalCount == 20 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 9 );
-    REQUIRE( catalog.GetStatistics().discardedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 10 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 7 );
     REQUIRE( catalog.gettext("apples") == "APPLES" );
     REQUIRE( catalog.ngettext("corn", "corns", 1) == "CORN#1" );
     REQUIRE( catalog.ngettext("corn", "corns", 2) == "CORN#2" );
@@ -407,12 +407,12 @@ TEST_CASE( "Catalog::Merge()", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 3 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 9 );
-    REQUIRE( catalog.GetStringTable().size() == 20 );
+    REQUIRE( catalog.GetIndex().size() == 10 );
+    REQUIRE( catalog.GetStringTable().size() == 21 );
     REQUIRE( catalog.GetStatistics().totalCount == 18 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 9 );
-    REQUIRE( catalog.GetStatistics().discardedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 10 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 7 );
     REQUIRE( catalog.gettext("apples") == "APPLES" );
     REQUIRE( catalog.ngettext("corn", "corns", 1) == "CORN#1" );
     REQUIRE( catalog.ngettext("corn", "corns", 2) == "CORN#2" );
@@ -437,39 +437,39 @@ TEST_CASE( "Catalog::ClearError()", "[Catalog]" ) {
     catalog.ClearError();
     REQUIRE( catalog.GetError().size() == 0 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 5 );
-    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetIndex().size() == 6 );
+    REQUIRE( catalog.GetStringTable().size() == 13 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
 
     catalog.Add(test_data_2.begin(), test_data_2.end());
     REQUIRE( catalog.GetError().size() == 2 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 9 );
-    REQUIRE( catalog.GetStringTable().size() == 20 );
+    REQUIRE( catalog.GetIndex().size() == 10 );
+    REQUIRE( catalog.GetStringTable().size() == 21 );
     REQUIRE( catalog.GetStatistics().totalCount == 20 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 9 );
-    REQUIRE( catalog.GetStatistics().discardedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 10 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 7 );
 
     catalog.ClearError();
     REQUIRE( catalog.GetError().size() == 0 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 9 );
-    REQUIRE( catalog.GetStringTable().size() == 20 );
+    REQUIRE( catalog.GetIndex().size() == 10 );
+    REQUIRE( catalog.GetStringTable().size() == 21 );
     REQUIRE( catalog.GetStatistics().totalCount == 20 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 9 );
-    REQUIRE( catalog.GetStatistics().discardedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 10 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 7 );
 }
 
 
 TEST_CASE( "Catalog::GetError()", "[Catalog]" ) {
     Catalog catalog(test_data.begin(), test_data.end());
     catalog.Add(test_data_2.begin(), test_data_2.end());
-    vector<string> expected_errors { "40,1: 'msgstr' is expected.", "38,1: 'msgstr' is expected.", "53,1: 'msgstr' is expected." };
+    vector<string> expected_errors { "40,1: Unexpected EOT (the previous entry is incomplete).", "39,1: Unexpected msgid (the previous entry is incomplete).", "54,1: Unexpected msgctxt (the previous entry is incomplete)." };
     REQUIRE( catalog.GetError() ==  expected_errors );
 }
 
@@ -478,23 +478,23 @@ TEST_CASE( "Catalog::ClearStatistics()", "[Catalog]" ) {
     Catalog catalog(test_data.begin(), test_data.end());
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 5 );
-    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetIndex().size() == 6 );
+    REQUIRE( catalog.GetStringTable().size() == 13 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
     catalog.ClearStatistics();
 
     catalog.Add(test_data_2.begin(), test_data_2.end());
     REQUIRE( catalog.GetError().size() == 3 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 9 );
-    REQUIRE( catalog.GetStringTable().size() == 20 );
+    REQUIRE( catalog.GetIndex().size() == 10 );
+    REQUIRE( catalog.GetStringTable().size() == 21 );
     REQUIRE( catalog.GetStatistics().totalCount == 12 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 4 );
-    REQUIRE( catalog.GetStatistics().discardedCount == 5 );
+    REQUIRE( catalog.GetStatistics().discardedCount == 6 );
 }
 
 
@@ -512,11 +512,11 @@ TEST_CASE( "Metadata Statistics (Add)", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 6 );
-    REQUIRE( catalog.GetStringTable().size() == 13 );
+    REQUIRE( catalog.GetIndex().size() == 7 );
+    REQUIRE( catalog.GetStringTable().size() == 14 );
     REQUIRE( catalog.GetStatistics().totalCount == 10 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 7 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
 
     catalog.Clear();
@@ -542,11 +542,11 @@ TEST_CASE( "Metadata Statistics (Add)", "[Catalog]" ) {
     catalog.Add(test_data.begin(), test_data.end());
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 6 );
-    REQUIRE( catalog.GetStringTable().size() == 13 );
+    REQUIRE( catalog.GetIndex().size() == 7 );
+    REQUIRE( catalog.GetStringTable().size() == 14 );
     REQUIRE( catalog.GetStatistics().totalCount == 10 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 7 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
 }
 
@@ -558,11 +558,11 @@ TEST_CASE( "Metadata Statistics (Merge)", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 6 );
-    REQUIRE( catalog.GetStringTable().size() == 13 );
+    REQUIRE( catalog.GetIndex().size() == 7 );
+    REQUIRE( catalog.GetStringTable().size() == 14 );
     REQUIRE( catalog.GetStatistics().totalCount == 9 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 7 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
 
     catalog.Clear();
@@ -590,11 +590,11 @@ TEST_CASE( "Metadata Statistics (Merge)", "[Catalog]" ) {
     catalog.Merge(catalog2);
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 6 );
-    REQUIRE( catalog.GetStringTable().size() == 13 );
+    REQUIRE( catalog.GetIndex().size() == 7 );
+    REQUIRE( catalog.GetStringTable().size() == 14 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 7 );
     REQUIRE( catalog.GetStatistics().discardedCount == 0 );
 }
 
@@ -661,11 +661,11 @@ TEST_CASE( "Constructor by C++20 Input Iterator (non copyable)", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 5 );
-    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetIndex().size() == 6 );
+    REQUIRE( catalog.GetStringTable().size() == 13 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
 }
 
@@ -677,10 +677,146 @@ TEST_CASE( "Add by C++20 Input Iterator (non copyable)", "[Catalog]" ) {
 
     REQUIRE( catalog.GetError().size() == 1 );
     REQUIRE( catalog.GetMetadata().size() == 2 );
-    REQUIRE( catalog.GetIndex().size() == 5 );
-    REQUIRE( catalog.GetStringTable().size() == 12 );
+    REQUIRE( catalog.GetIndex().size() == 6 );
+    REQUIRE( catalog.GetStringTable().size() == 13 );
     REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
-    REQUIRE( catalog.GetStatistics().translatedCount == 5 );
+    REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
+}
+
+
+
+TEST_CASE( "default nplurals is 2 (1/2)", "[Catalog]" ) {
+    const string po_text = R"(msgid ""
+msgstr ""
+"Plural-Forms: plural=n%4;\n"
+
+msgid "a"
+msgid_plural "as"
+msgstr[0] "A0"
+msgstr[1] "A1"
+msgstr[2] "A2"
+msgstr[3] "A3"
+)";
+    Catalog catalog(po_text.begin(), po_text.end());
+    REQUIRE( catalog.GetError().size() == 0 );
+    REQUIRE( catalog.ngettext("a", "as", 0) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 1) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 2) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 3) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 4) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 5) == "A1" );
+}
+
+TEST_CASE( "default nplurals is 2 (2/2)", "[Catalog]" ) {
+    const string po_text = R"(msgid ""
+msgstr ""
+"Plural-Forms: nplurals=x; plural=n%4;\n"
+
+msgid "a"
+msgid_plural "as"
+msgstr[0] "A0"
+msgstr[1] "A1"
+msgstr[2] "A2"
+msgstr[3] "A3"
+)";
+    Catalog catalog(po_text.begin(), po_text.end());
+    REQUIRE( catalog.GetError().size() == 0 );
+    REQUIRE( catalog.ngettext("a", "as", 0) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 1) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 2) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 3) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 4) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 5) == "A1" );
+}
+
+TEST_CASE( "nplurals=0 means 1", "[Catalog]" ) {
+    const string po_text = R"(msgid ""
+msgstr ""
+"Plural-Forms: nplurals=0; plural=n%4;\n"
+
+msgid "a"
+msgid_plural "as"
+msgstr[0] "A0"
+msgstr[1] "A1"
+msgstr[2] "A2"
+msgstr[3] "A3"
+)";
+    Catalog catalog(po_text.begin(), po_text.end());
+    REQUIRE( catalog.GetError().size() == 1 );
+    REQUIRE( catalog.GetError()[0] == "nplurals must be more than 0; ignored." );
+    REQUIRE( catalog.ngettext("a", "as", 0) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 1) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 2) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 3) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 4) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 5) == "A0" );
+}
+
+TEST_CASE( "default plural= is n!=1", "[Catalog]" ) {
+    const string po_text = R"(msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4;\n"
+
+msgid "a"
+msgid_plural "as"
+msgstr[0] "A0"
+msgstr[1] "A1"
+msgstr[2] "A2"
+msgstr[3] "A3"
+)";
+    Catalog catalog(po_text.begin(), po_text.end());
+    REQUIRE( catalog.GetError().size() == 0 );
+    REQUIRE( catalog.ngettext("a", "as", 0) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 1) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 2) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 3) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 4) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 5) == "A1" );
+}
+
+TEST_CASE( "plural expression error causes fallback into n!=1", "[Catalog]" ) {
+    const string po_text = R"(msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=n%4x\n"
+
+msgid "a"
+msgid_plural "as"
+msgstr[0] "A0"
+msgstr[1] "A1"
+msgstr[2] "A2"
+msgstr[3] "A3"
+)";
+    Catalog catalog(po_text.begin(), po_text.end());
+    REQUIRE( catalog.GetError().size() == 1 );
+    REQUIRE( catalog.GetError()[0] == "Column#4 in the plural expression \"n%4x\": Parse error: Invalid character is detected." );
+    REQUIRE( catalog.ngettext("a", "as", 0) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 1) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 2) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 3) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 4) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 5) == "A1" );
+}
+
+TEST_CASE( "normal nplurals= and plurals=", "[Catalog]" ) {
+    const string po_text = R"(msgid ""
+msgstr ""
+"Plural-Forms: nplurals=4; plural=n%4\n"
+
+msgid "a"
+msgid_plural "as"
+msgstr[0] "A0"
+msgstr[1] "A1"
+msgstr[2] "A2"
+msgstr[3] "A3"
+)";
+    Catalog catalog(po_text.begin(), po_text.end());
+    REQUIRE( catalog.GetError().size() == 0 );
+    REQUIRE( catalog.ngettext("a", "as", 0) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 1) == "A1" );
+    REQUIRE( catalog.ngettext("a", "as", 2) == "A2" );
+    REQUIRE( catalog.ngettext("a", "as", 3) == "A3" );
+    REQUIRE( catalog.ngettext("a", "as", 4) == "A0" );
+    REQUIRE( catalog.ngettext("a", "as", 5) == "A1" );
 }

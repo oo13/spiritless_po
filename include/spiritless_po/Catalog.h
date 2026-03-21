@@ -1,7 +1,7 @@
 /** class Catalog
     \file Catalog.h
     \author OOTA, Masato
-    \copyright Copyright © 2019, 2022, 2024 OOTA, Masato
+    \copyright Copyright © 2019, 2022, 2024, 2026 OOTA, Masato
     \par License Boost
     \parblock
       This program is distributed under the Boost Software License Version 1.0.
@@ -160,18 +160,16 @@ namespace spiritless_po {
             For each entry added by Add() and Merge():
             1. `totalCount`++
             2. if msgstr[0] == "" then (* untranslated entry *) continue
-            3. if ID == "" then `metadataCount`++; continue
+            3. if ID == "" then `metadataCount`++
             4. if ID already exists in the catalog then `discardedCount`++; continue
             5. `translatedCount`++
 
             "ID" means msgid, or msgctxt + CONTEXT_SEPARATOR + msgid if msgctxt != "".
 
-            Add(a normal PO file) is to report `metadataCount` == 1 and `discardedCount` == 0.
+            Add(a normal PO file) to an empty catalog is to report `metadataCount` == 1 and `discardedCount` == 0.
 
             \note `totalCount` counts the empty ID, unlike "msgfmt --statistics".
             \note Only first metadata is used when `metadataCount` is more than one.
-            \note `discardedCount` doesn't count the discarded metadata.
-            \note The increment of `translatedCount` is equal to the increment of index.size().
             \attention Merge() reports no untranslated entry, because the catalog doesn't keep the untranslated entry.
         */
         struct StatisticsT {
@@ -237,9 +235,8 @@ namespace spiritless_po {
 
     inline Catalog::Catalog()
         : metadata(), index(), stringTable(), pluralFunction(),
-          maxPlurals(0), errors()
+          maxPlurals(0), errors(), statistics{}
     {
-        ClearStatistics();
     }
 
     template <typename INP, typename Sentinel>
@@ -270,36 +267,37 @@ namespace spiritless_po {
             if (!it.error.empty()) {
                 errors.push_back(std::move(it.error));
             } else if (!it.msgstr[0].empty()) {
-                if (!it.msgid.empty()) {
-                    if (index.find(it.msgid) == index.end()) {
-                        IndexDataT idx;
-                        idx.stringTableIndex = stringTable.size();
-                        idx.totalPlurals = it.msgstr.size();
-                        stringTable.insert(stringTable.end(), std::make_move_iterator(it.msgstr.begin()), std::make_move_iterator(it.msgstr.end()));
-                        index.emplace(it.msgid, idx);
-                    } else {
-                        statistics.discardedCount++;
-                    }
-                } else {
+                if (it.msgid.empty()) {
                     statistics.metadataCount++;
                     if (metadata.empty()) {
-                        metadata = MetadataParser::Parse(it.msgstr[0]);
-                        const auto plural = metadata.find("Plural-Forms");
-                        if (plural != metadata.end()) {
-                            const auto pluralText = plural->second;
-                            try {
-                                const auto pluralData = PluralParser::Parse(pluralText);
-                                if (pluralData.first > 0) {
-                                    maxPlurals = pluralData.first - 1;
-                                }
-                                pluralFunction = pluralData.second;
-                            } catch (PluralParser::ExpressionError &e) {
-                                const size_t col = std::distance(pluralText.cbegin(), e.Where());
-                                errors.emplace_back("Column#" + std::to_string(col + 1)
-                                    + " in plural expression: " + e.what());
-                            }
+                        const std::string &metadataString = it.msgstr[0];
+                        metadata = MetadataParser::Parse(metadataString);
+                        unsigned long nplurals = 2;
+                        MetadataParser::GetNPlurals(metadataString, nplurals);
+                        if (nplurals == 0) {
+                            errors.emplace_back("nplurals must be more than 0; ignored.");
+                            nplurals = 1;
+                        }
+                        maxPlurals = nplurals - 1;
+                        std::string plural("n!=1");
+                        MetadataParser::GetPlural(metadataString, plural);
+                        try {
+                            pluralFunction = PluralParser::Parse(plural);
+                        } catch (PluralParser::ExpressionError &e) {
+                            const size_t col = std::distance(plural.cbegin(), e.Where());
+                            errors.emplace_back("Column#" + std::to_string(col + 1)
+                                + " in the plural expression \"" + plural + "\": " + e.what());
                         }
                     }
+                }
+                if (index.find(it.msgid) == index.end()) {
+                    IndexDataT idx;
+                    idx.stringTableIndex = stringTable.size();
+                    idx.totalPlurals = it.msgstr.size();
+                    stringTable.insert(stringTable.end(), std::make_move_iterator(it.msgstr.begin()), std::make_move_iterator(it.msgstr.end()));
+                    index.emplace(it.msgid, idx);
+                } else {
+                    statistics.discardedCount++;
                 }
             }
         }
@@ -318,7 +316,6 @@ namespace spiritless_po {
     {
         if (!a.metadata.empty()) {
             statistics.metadataCount++;
-            statistics.totalCount++;
             if (metadata.empty()) {
                 metadata = a.metadata;
                 maxPlurals = a.maxPlurals;
@@ -374,7 +371,7 @@ namespace spiritless_po {
         const auto &it = index.find(msgid);
         if (it != index.end()) {
             std::size_t nIdx = pluralFunction(n);
-            if (nIdx >= it->second.totalPlurals) {
+            if (nIdx > maxPlurals || nIdx >= it->second.totalPlurals) {
                 nIdx = 0;
             }
             return stringTable[it->second.stringTableIndex + nIdx];
@@ -409,7 +406,7 @@ namespace spiritless_po {
         const auto &it = index.find(s);
         if (it != index.end()) {
             std::size_t nIdx = pluralFunction(n);
-            if (nIdx >= it->second.totalPlurals) {
+            if (nIdx > maxPlurals || nIdx >= it->second.totalPlurals) {
                 nIdx = 0;
             }
             return stringTable[it->second.stringTableIndex + nIdx];
