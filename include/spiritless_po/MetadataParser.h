@@ -12,6 +12,7 @@
 #ifndef SPIRITLESS_PO_METADATA_PARSER_H_
 #define SPIRITLESS_PO_METADATA_PARSER_H_
 
+#include <locale>
 #include <string>
 #include <unordered_map>
 

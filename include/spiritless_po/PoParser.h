@@ -759,8 +759,8 @@ namespace spiritless_po {
                 token = TokenT::ERROR;
                 if (curEntry.error.empty()) {
                     // Report only the error that causes an error.
-                    const LocationT &loc = e.GetLocation();
-                    curEntry.error = loc.ToString() + e.what();
+                    const LocationT &eloc = e.GetLocation();
+                    curEntry.error = eloc.ToString() + e.what();
                 }
             }
             state = transTable.GetState(state, token);
