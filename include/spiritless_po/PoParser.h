@@ -428,7 +428,7 @@ namespace spiritless_po {
             firstC,
         };
         unsigned int idx = 1;
-        // The maximum digits of "\012" is 3.
+        // The maximum digits number of the escape octal is 3.
         while (it.IsNotEnd()) {
             const char c = it.Get();
             if (std::isdigit(c, std::locale::classic()) && c != '8' && c != '9') {

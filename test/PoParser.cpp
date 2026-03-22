@@ -5093,6 +5093,23 @@ msgstr "x\x0123456789ABCDEFabcdef)";
 }
 
 
+TEST_CASE( "escape sequence hex utf-8 encoding", "[PoParser]" ) {
+    const string po_text = R"(
+msgid "a"
+msgstr "あ\xe3\x81" "\x84" "0"
+
+msgid "b"
+msgstr "B\343\201\2061\343\201\210"
+)";
+    auto entries = PoParser::GetEntries(po_text.begin(), po_text.end());
+    SECTION( "entries" ) {
+        REQUIRE( entries.size() == 2 );
+        REQUIRE( equal(entries[0], create("a", { "あい0" }, "")) );
+        REQUIRE( equal(entries[1], create("b", { "Bう1え" }, "")) );
+    }
+}
+
+
 TEST_CASE( "no white space", "[PoParser]" ) {
     const string po_text = R"(msgid"a"msgstr"A"#comment
 #:a:10 b:20
