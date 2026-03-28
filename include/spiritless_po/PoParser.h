@@ -783,7 +783,6 @@ namespace spiritless_po {
                 curEntry.error.clear();
                 fuzzy = false;
                 hasMsgctxt = false;
-                n_msgstr = 0;
                 state = transTable.GetState(state, token);
             }
             switch (state) {

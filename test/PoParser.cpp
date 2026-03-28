@@ -1027,7 +1027,7 @@ msgstr "b"
 }
 
 
-TEST_CASE( "fuzzy space spaseparator", "[PoParser]" ) {
+TEST_CASE( "fuzzy space separator", "[PoParser]" ) {
     const string po_text = R"(
 #, a b	c fuzzy	d
 msgid "a"
@@ -4746,7 +4746,6 @@ msgstr "B3"
 }
 
 
-
 TEST_CASE( "Inconsistent n for msgstr[n]", "[PoParser]" ) {
     const string po_text = R"(
 msgid "a"
@@ -4788,9 +4787,6 @@ msgstr "F"
         REQUIRE( equal(entries[5], create("f", { "F" }, "")) );
     }
 }
-
-
-
 
 
 TEST_CASE( "newline in text", "[PoParser]" ) {
