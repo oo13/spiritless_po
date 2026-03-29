@@ -230,7 +230,7 @@ TEST_CASE( "GetPlural EOT", "[MetadataParser]" ) {
 }
 
 
-TEST_CASE( "GetPlural ignore text before nplurals", "[MetadataParser]" ) {
+TEST_CASE( "GetPlural ignore text before plural", "[MetadataParser]" ) {
     const string test_data = "text\n"
         "zzzplural=yyy";
     std::string plural = "zzz";
@@ -257,7 +257,7 @@ TEST_CASE( "GetPlural white space 2", "[MetadataParser]" ) {
     REQUIRE( plural == "" );
 }
 
-TEST_CASE( "GetNPlurals end of expression 1", "[MetadataParser]" ) {
+TEST_CASE( "GetPlural end of expression 1", "[MetadataParser]" ) {
     const string test_data = "text\n"
         "zzzplural=yyy;xxx";
     std::string plural = "zzz";
@@ -266,7 +266,7 @@ TEST_CASE( "GetNPlurals end of expression 1", "[MetadataParser]" ) {
 }
 
 
-TEST_CASE( "GetNPlurals end of expression 2", "[MetadataParser]" ) {
+TEST_CASE( "GetPlural end of expression 2", "[MetadataParser]" ) {
     const string test_data = "text\n"
         "zzzplural=yyy\n"
         "xxx";
@@ -276,7 +276,7 @@ TEST_CASE( "GetNPlurals end of expression 2", "[MetadataParser]" ) {
 }
 
 
-TEST_CASE( "GetNPlurals end of expression 3", "[MetadataParser]" ) {
+TEST_CASE( "GetPlural end of expression 3", "[MetadataParser]" ) {
     const string test_data = "text\n"
         "zzzplural=yyy xxx";
     std::string plural = "zzz";
@@ -285,7 +285,7 @@ TEST_CASE( "GetNPlurals end of expression 3", "[MetadataParser]" ) {
 }
 
 
-TEST_CASE( "GetNPlurals end of expression 4", "[MetadataParser]" ) {
+TEST_CASE( "GetPlural end of expression 4", "[MetadataParser]" ) {
     const string test_data = "text\n"
         "zzzplural=yyy\rxxx";
     std::string plural = "zzz";

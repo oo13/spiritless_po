@@ -170,6 +170,7 @@ namespace spiritless_po {
 
             \note `totalCount` counts the empty ID, unlike "msgfmt --statistics".
             \note Only first metadata is used when `metadataCount` is more than one.
+            \note The increment of [`translated`] is equal to the increment of [`Catalog::index()`]`.len()`.
             \attention Merge() reports no untranslated entry, because the catalog doesn't keep the untranslated entry.
         */
         struct StatisticsT {
@@ -266,6 +267,7 @@ namespace spiritless_po {
         for (auto &it : newEntries) {
             if (!it.error.empty()) {
                 errors.push_back(std::move(it.error));
+                statistics.totalCount--;
             } else if (!it.msgstr[0].empty()) {
                 if (it.msgid.empty()) {
                     statistics.metadataCount++;

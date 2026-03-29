@@ -153,7 +153,7 @@ TEST_CASE( "Constructor(begin, end) in Catalog", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 6 );
     REQUIRE( catalog.GetStringTable().size() == 13 );
-    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().totalCount == 7 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -184,7 +184,7 @@ TEST_CASE( "Constructor(is) in Catalog", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 6 );
     REQUIRE( catalog.GetStringTable().size() == 13 );
-    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().totalCount == 7 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -263,7 +263,7 @@ TEST_CASE( "Catalog::Clear()", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 6 );
     REQUIRE( catalog.GetStringTable().size() == 13 );
-    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().totalCount == 7 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -345,7 +345,7 @@ TEST_CASE( "Catalog::Add(begin, end)", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 10 );
     REQUIRE( catalog.GetStringTable().size() == 21 );
-    REQUIRE( catalog.GetStatistics().totalCount == 20 );
+    REQUIRE( catalog.GetStatistics().totalCount == 17 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
     REQUIRE( catalog.GetStatistics().translatedCount == 10 );
     REQUIRE( catalog.GetStatistics().discardedCount == 7 );
@@ -377,7 +377,7 @@ TEST_CASE( "Catalog::Add(is)", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 10 );
     REQUIRE( catalog.GetStringTable().size() == 21 );
-    REQUIRE( catalog.GetStatistics().totalCount == 20 );
+    REQUIRE( catalog.GetStatistics().totalCount == 17 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
     REQUIRE( catalog.GetStatistics().translatedCount == 10 );
     REQUIRE( catalog.GetStatistics().discardedCount == 7 );
@@ -409,7 +409,7 @@ TEST_CASE( "Catalog::Merge()", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 10 );
     REQUIRE( catalog.GetStringTable().size() == 21 );
-    REQUIRE( catalog.GetStatistics().totalCount == 18 );
+    REQUIRE( catalog.GetStatistics().totalCount == 17 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
     REQUIRE( catalog.GetStatistics().translatedCount == 10 );
     REQUIRE( catalog.GetStatistics().discardedCount == 7 );
@@ -439,7 +439,7 @@ TEST_CASE( "Catalog::ClearError()", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 6 );
     REQUIRE( catalog.GetStringTable().size() == 13 );
-    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().totalCount == 7 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -449,7 +449,7 @@ TEST_CASE( "Catalog::ClearError()", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 10 );
     REQUIRE( catalog.GetStringTable().size() == 21 );
-    REQUIRE( catalog.GetStatistics().totalCount == 20 );
+    REQUIRE( catalog.GetStatistics().totalCount == 17 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
     REQUIRE( catalog.GetStatistics().translatedCount == 10 );
     REQUIRE( catalog.GetStatistics().discardedCount == 7 );
@@ -459,7 +459,7 @@ TEST_CASE( "Catalog::ClearError()", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 10 );
     REQUIRE( catalog.GetStringTable().size() == 21 );
-    REQUIRE( catalog.GetStatistics().totalCount == 20 );
+    REQUIRE( catalog.GetStatistics().totalCount == 17 );
     REQUIRE( catalog.GetStatistics().metadataCount == 2 );
     REQUIRE( catalog.GetStatistics().translatedCount == 10 );
     REQUIRE( catalog.GetStatistics().discardedCount == 7 );
@@ -480,7 +480,7 @@ TEST_CASE( "Catalog::ClearStatistics()", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 6 );
     REQUIRE( catalog.GetStringTable().size() == 13 );
-    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().totalCount == 7 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -491,7 +491,7 @@ TEST_CASE( "Catalog::ClearStatistics()", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 10 );
     REQUIRE( catalog.GetStringTable().size() == 21 );
-    REQUIRE( catalog.GetStatistics().totalCount == 12 );
+    REQUIRE( catalog.GetStatistics().totalCount == 10 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 4 );
     REQUIRE( catalog.GetStatistics().discardedCount == 6 );
@@ -514,7 +514,7 @@ TEST_CASE( "Metadata Statistics (Add)", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 7 );
     REQUIRE( catalog.GetStringTable().size() == 14 );
-    REQUIRE( catalog.GetStatistics().totalCount == 10 );
+    REQUIRE( catalog.GetStatistics().totalCount == 9 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 7 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -544,7 +544,7 @@ TEST_CASE( "Metadata Statistics (Add)", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 7 );
     REQUIRE( catalog.GetStringTable().size() == 14 );
-    REQUIRE( catalog.GetStatistics().totalCount == 10 );
+    REQUIRE( catalog.GetStatistics().totalCount == 9 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 7 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -560,7 +560,7 @@ TEST_CASE( "Metadata Statistics (Merge)", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 7 );
     REQUIRE( catalog.GetStringTable().size() == 14 );
-    REQUIRE( catalog.GetStatistics().totalCount == 9 );
+    REQUIRE( catalog.GetStatistics().totalCount == 8 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 7 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -663,7 +663,7 @@ TEST_CASE( "Constructor by C++20 Input Iterator (non copyable)", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 6 );
     REQUIRE( catalog.GetStringTable().size() == 13 );
-    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().totalCount == 7 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
@@ -679,7 +679,7 @@ TEST_CASE( "Add by C++20 Input Iterator (non copyable)", "[Catalog]" ) {
     REQUIRE( catalog.GetMetadata().size() == 2 );
     REQUIRE( catalog.GetIndex().size() == 6 );
     REQUIRE( catalog.GetStringTable().size() == 13 );
-    REQUIRE( catalog.GetStatistics().totalCount == 8 );
+    REQUIRE( catalog.GetStatistics().totalCount == 7 );
     REQUIRE( catalog.GetStatistics().metadataCount == 1 );
     REQUIRE( catalog.GetStatistics().translatedCount == 6 );
     REQUIRE( catalog.GetStatistics().discardedCount == 1 );
